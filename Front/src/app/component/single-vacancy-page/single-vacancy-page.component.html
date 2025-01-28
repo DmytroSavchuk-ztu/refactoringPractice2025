@@ -1,0 +1,29 @@
+<div *ngIf="job" class="wrapper">
+  <div class="projectsFather">
+
+
+      <div class="item">
+        <div>
+          <h2>{{job.jobTitle}}</h2>
+
+          <h3>Job Description:</h3>
+          <p>{{job.jobDescription}}</p>
+
+          <h3>Job Requirements:</h3>
+          <p>{{job.jobRequirements}}</p>
+
+          <h3>Contact Information:</h3>
+          <p>{{job.contactInformation}}</p>
+
+          <button *ngIf="job.vacancyUrl" (click)="goByUrl(job.vacancyUrl)" class="button">Contact us</button>
+        </div>
+
+
+      </div>
+
+  </div>
+</div>
+
+<div class="bg">
+
+</div>

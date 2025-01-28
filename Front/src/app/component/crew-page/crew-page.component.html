@@ -1,0 +1,43 @@
+<div class="father">
+
+  <div class="pageTitle">
+    <img class="zavitushka" src="assets/smallDetails/Group%20(2).svg">
+    <h1>Team</h1>
+  </div>
+
+
+  <div class="crewsFather">
+
+
+    <ng-container *ngFor="let crew of crews;let i = index">
+
+
+      <div class="crew filter" *ngIf="isFirstWithFilter(i,crew)">
+        <h1>{{getFilterDisplayValue(crew.filter)}}</h1>
+      </div>
+
+
+      <div (click)="navigateToDetails(crew)" class="crew">
+        <img [src]=" imagePath + crew.photoUrl "/>
+
+        <div  class="details">
+          <p *ngIf="crew.name">{{crew.name}} {{crew.surname}}</p>
+          <p *ngIf="crew.position" style="opacity: 50%">{{crew.position}}</p>
+          <p *ngIf="crew.phoneNumber">{{crew.phoneNumber}}</p>
+          <p *ngIf="crew.email">{{crew.email}}</p>
+          <p *ngIf="crew.bio">{{crew.bio}}</p>
+        </div>
+      </div>
+
+
+    </ng-container>
+
+
+  </div>
+
+
+</div>
+
+
+<div class="bg">
+</div>

@@ -1,0 +1,65 @@
+<ng-container *ngIf="news">
+
+
+  <div class="father">
+
+    <h1 style="width: 80%;text-align: center">{{news.title}}</h1>
+
+
+
+    <div class="section">
+
+      <ng-container *ngIf="news.titlePhotoUrl">
+        <div>
+          <img style="width: 100%;margin-bottom:10px "
+               [src]="imagePath+news.titlePhotoUrl"
+               (load)="setImageOrientation($event)">
+        </div>
+      </ng-container>
+
+
+      <div class="text" style="margin-bottom: 10px" >{{news.titleDescription}}</div>
+
+    </div>
+
+
+    <ng-container *ngFor="let section of news.newsSection">
+
+      <div class="section">
+
+        <ng-container *ngIf="section.sectionPhotoUrl">
+          <div>
+            <img style="width: 100%;margin-top: 10px"
+                 [src]="imagePath+section.sectionPhotoUrl"
+                 (load)="setImageOrientation($event)">
+          </div>
+        </ng-container>
+
+
+        <div class="text" [innerHTML]="section.sectionDescription | safeHtml"></div>
+
+      </div>
+
+
+    </ng-container>
+
+
+    <ng-container *ngIf="news.titleVideoURl">
+      <div>
+        <iframe class="video"
+                width="90%"
+                height="100%"
+                [src]="'https://www.youtube.com/embed/' + news.titleVideoURl | video"
+                allowfullscreen
+        ></iframe>
+      </div>
+
+    </ng-container>
+
+
+  </div>
+
+</ng-container>
+
+
+

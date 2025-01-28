@@ -1,0 +1,80 @@
+<div class="father">
+
+
+  <div *ngIf="text" class="main">
+    <div class="bg">
+
+
+      <video *ngIf="isVideo(text[1].photoUrl)" autoplay [muted]="true" loop [src]="text[1].photoUrl"
+             class="bg-image"></video>
+
+      <!-- If it's not a video, assume it's an image -->
+      <img *ngIf="!isVideo(text[1].photoUrl)" [src]="text[1].photoUrl" class="bg-image">
+
+      <div class="nameFather">
+        <h1>Animation Studio</h1>
+      </div>
+    </div>
+
+
+    <div *ngIf="text" class="anTxt">
+      <div [innerHTML]="text[1].text"></div>
+    </div>
+    <div style="width: 100%;display: flex;align-items: center;flex-direction: column">
+
+      <h1 style="font-size: 60px;text-align: center">WE OFFER</h1>
+      <div class="offer">
+        <ul>
+          <li>character design
+          </li>
+          <li>art direction
+          </li>
+          <li>set design
+          </li>
+          <li>storyboarding
+          </li>
+          <li>3D modelling
+          </li>
+          <li>rigging
+          </li>
+        </ul>
+        <ul>
+          <li>compositing
+          </li>
+          <li>3D animation
+          </li>
+          <li>2D animation
+          </li>
+          <li>VFX
+          </li>
+          <li>rendering
+          </li>
+          <li>lighting
+          </li>
+        </ul>
+      </div>
+
+<div style="width: 80%;height: 400px">
+  <owl-carousel-o [options]="customOptions">
+    <ng-container *ngFor="let image of text[1].images">
+      <ng-template carouselSlide>
+        <img [src]="image" [alt]="image">
+      </ng-template>
+    </ng-container>
+  </owl-carousel-o>
+</div>
+
+
+
+      <button class="button">Contact Us</button>
+
+
+    </div>
+  </div>
+
+  <div class="bga">
+
+  </div>
+
+
+</div>

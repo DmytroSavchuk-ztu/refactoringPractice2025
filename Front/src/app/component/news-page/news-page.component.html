@@ -1,0 +1,44 @@
+<div class="father">
+  <div class="pageTitle">
+    <img class="zavitushka" src="assets/smallDetails/Group%20(2).svg">
+    <h1>News</h1>
+  </div>
+
+
+  <ng-container *ngFor="let item of news">
+    <div class="item">
+
+
+
+
+      <div *ngIf="imageStyles" [ngStyle]="imageStyles[item.id]" (click)="redirectToDetailsPage(item.id)" class="title">
+          <img [src]="imagePath + item.titlePhotoUrl">
+      </div>
+      <div class="description">
+        <h1>{{item.title}}</h1>
+        <p>{{item.titleDescription}}</p>
+        <button (click)="redirectToDetailsPage(item.id)" class="button">Read more</button>
+
+        <div style="margin-top: 10px">
+          <ng-container *ngFor="let tag of item.tags">
+            <a (click)="getNewsByTag(tag)" class="ahref">#{{tag}}</a>
+          </ng-container>
+        </div>
+
+<div style="margin-top: 10px">
+  <p>{{item.customDate.split('T')[0]}}</p>
+</div>
+
+
+      </div>
+
+    </div>
+    <hr/>
+  </ng-container>
+</div>
+
+
+<div class="bg">
+
+
+</div>

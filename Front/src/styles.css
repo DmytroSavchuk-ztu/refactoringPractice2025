@@ -1,0 +1,98 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "~owl.carousel/dist/assets/owl.carousel.css";
+@import "~owl.carousel/dist/assets/owl.theme.default.css";
+
+
+body {
+  margin: 0;
+  font-family: R, sans-serif!important;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+
+.bat{
+
+  background: none;
+  border: 2px solid black;
+  padding: 10px;
+  width: 200px;
+  cursor: pointer;
+  transition: ease-in-out 0.3s;
+  font-size: 17px;
+}
+
+.bat:hover {
+  background-color: #E39E9E;
+  color: #000;
+  text-decoration: none;
+}
+
+
+html {
+  background: #F2F0EE;
+}
+
+.owl-nav {
+  display: none;
+}
+
+.owl-dots{
+  margin-bottom: 50px;
+}
+
+.owl-item{
+
+  width: 200px;
+  height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.owl-stage-outer{
+  border-radius: 10px;
+}
+
+#DataTables_Table_0_filter{
+  margin-right: 20px;
+}
+
+#ta_info{
+  display: none;
+}
+
+#DataTables_Table_0_paginate{
+  display: none;
+}
+
+#DataTables_Table_0_info{
+  display: none;
+}
+
+#DataTables_Table_0_length{
+  display: none;
+}
+
+
+.button {
+  margin-top: 10px;
+  background: none;
+  border: 2px solid black;
+  padding: 20px;
+  width: 200px;
+  cursor: pointer;
+  transition: ease-in-out 0.3s;
+  font-size: 17px;
+}
+
+.button:hover {
+  background-color: #E39E9E;
+  color: #000;
+  text-decoration: none;
+}

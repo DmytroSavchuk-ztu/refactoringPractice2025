@@ -1,0 +1,152 @@
+
+.main {
+  width: 100vw;
+  height: 100%;
+  overflow-x: hidden;
+  background-repeat: no-repeat;
+}
+
+.bg {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.bg-image{
+  width: 100%;
+  filter: brightness(0.8);
+  pointer-events: none;
+}
+
+.bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  filter: brightness(0.8);
+  z-index: -1;
+}
+
+
+
+.father {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.nameFather {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: center;
+  height: 750px;
+  width: 100%;
+  position: absolute;
+  top: 100px;
+}
+
+.nameFather h1 {
+  font-size: 60px;
+  position: relative;
+  color: #F2F0EE;
+text-align: center;
+  /*background: rgba(242, 240, 238, 0.65);*/
+  /*padding: 20px;*/
+  /*border-radius: 10px;*/
+
+}
+
+.zavitushka {
+  position: relative;
+  top: 130px;
+  left: 200px;
+  width: 700px;
+  pointer-events: none;
+}
+
+.anTxt {
+  margin-top: 100px;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.anTxt div {
+  width: 80%;
+}
+
+
+.offer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 170px;
+  font-size: 30px;
+
+}
+
+.button {
+  margin-bottom: 200px;
+  margin-top: 100px;
+}
+
+.button {
+
+  background: none;
+  border: 2px solid black;
+  padding: 20px;
+  width: 200px;
+  cursor: pointer;
+  transition: ease-in-out 0.3s;
+  font-size: 17px;
+}
+
+.button:hover {
+  background-color: #E39E9E;
+  color: #000;
+  text-decoration: none;
+}
+
+
+
+.bga {
+  background-image: url('/assets/pictures/projectsbackground.svg');
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0px;
+  z-index: -100;
+}
+
+
+@media only screen and (max-width: 600px) {
+  .nameFather h1 {
+    font-size: 40px;
+
+  }
+
+  .nameFather {
+    height: unset;
+  }
+
+
+  .anTxt div {
+    width: 90%;
+  }
+
+  .offer {
+    gap: 20px;
+    font-size: 20px;
+  }
+
+  .zavitushka {
+    top: 100px;
+  }
+}

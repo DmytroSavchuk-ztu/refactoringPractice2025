@@ -1,0 +1,28 @@
+
+
+
+<div *ngIf="text" class="main">
+  <div class="bg">
+
+    <video *ngIf="isVideo(text[2].photoUrl)"  autoplay [muted]="true" loop [src]="text[2].photoUrl" class="bg-image"></video>
+
+    <!-- If it's not a video, assume it's an image -->
+    <img *ngIf="!isVideo(text[2].photoUrl)" [src]="text[2].photoUrl" class="bg-image">
+
+    <div class="nameFather">
+      <h1>Shooting Services In Poland</h1>
+    </div>
+  </div>
+
+
+
+
+
+
+<div *ngIf="text" class="infoFather">
+  <div class="info">
+    <div [innerHTML]="text[2].text"></div>
+  </div>
+</div>
+
+<div class="bga"></div>

@@ -1,0 +1,29 @@
+<div *ngIf="text" class="main">
+
+  <div class="bg">
+    <video *ngIf="isVideo(text[0].photoUrl)" autoplay [muted]="true" loop [src]="text[0].photoUrl"
+           class="bg-image"></video>
+    <img *ngIf="!isVideo(text[0].photoUrl)" [src]="text[0].photoUrl" class="bg-image"
+         [alt]="text[0].altDescription ? text[0].altDescription : 'Background Image'">
+  </div>
+
+  <div class="infoFather">
+    <div class="info">
+        <div [innerHTML]="text[0].text"></div>
+    </div>
+  </div>
+
+
+  <h1 style="width: 100%;text-align: center;margin: 20px">Our Partners</h1>
+  <div class="images">
+    <div class="imgs">
+      <ng-container *ngFor="let item of partners">
+
+        <a [href]="item.url">
+          <img class="ig" [src]="imagePath + item.logoId" [alt]="'Logo of ' + item.name">
+        </a>
+      </ng-container>
+    </div>
+  </div>
+
+</div>

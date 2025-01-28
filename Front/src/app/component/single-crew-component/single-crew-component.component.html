@@ -1,0 +1,17 @@
+<div *ngIf="crew" class="father">
+  <img class="imgfsd" [src]="imagePath + crew.photoUrl">
+  <div class="info">
+
+
+    <h1 class="h">{{crew.name}} {{crew.surname}}</h1>
+    <strong>Bio</strong>
+    <div [innerHTML]="crew.detailBio"></div>
+    <strong>Phone Number</strong>
+    <p>{{crew.phoneNumber}}</p>
+    <strong>Email</strong>
+    <p>{{crew.email}}</p>
+
+
+  </div>
+</div>
+

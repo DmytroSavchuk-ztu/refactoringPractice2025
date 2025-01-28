@@ -1,0 +1,44 @@
+
+<div class="father">
+
+  <div class="nameFather">
+    <img class="zavitushka" src="assets/smallDetails/Group.svg">
+    <h1>Projects</h1>
+  </div>
+  <div class="filter">
+    <div [ngClass]="{'borderBottom': border === null}" (click)="getProjects()" class="filterButton">All</div>
+    <div [ngClass]="{'borderBottom': border === 'inProduction'}" (click)="getFilteredProjects('inProduction')" class="filterButton">In Production</div>
+    <div [ngClass]="{'borderBottom': border === 'inDevelopment'}" (click)="getFilteredProjects('inDevelopment')" class="filterButton">In Development</div>
+    <div [ngClass]="{'borderBottom': border === 'animationService'}" (click)="getFilteredProjects('animationService')" class="filterButton">Animation Projects</div>
+    <div [ngClass]="{'borderBottom': border === 'culturalProjects'}" (click)="getFilteredProjects('culturalProjects')" class="filterButton">Cultural Projects</div>
+    <div [ngClass]="{'borderBottom': border === 'distribution'}" (click)="getFilteredProjects('distribution')" class="filterButton">In Distribution</div>
+
+
+
+
+  </div>
+  <div class="wrapper">
+    <div class="projectsFather">
+      <ng-container *ngFor="let project of projects">
+        <div (click)="redirectToProjectPage(project.id,project.is_landingPage)" class="project">
+          <div class="image">
+            <img [src]="imagePath + project.photoTitle">
+          </div>
+          <p>{{project.projectTitle}}</p>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div style="width: 100%;display: flex;justify-content: center">
+    <button (click)="navigateToDoc()" style="width: 400px;margin: 50px" class="button">Download Film Catalog</button>
+  </div>
+
+</div>
+
+
+
+<div class="bg">
+
+</div>
+

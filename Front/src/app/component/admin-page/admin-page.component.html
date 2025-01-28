@@ -1,0 +1,1247 @@
+<div class="header">
+  <button (click)="getCrews()">Crew</button>
+  <button (click)="getProjects()">Projects</button>
+  <button (click)="getNews()">News</button>
+  <button (click)="getVacancy()">Vacancy</button>
+  <button (click)="getText()">Texts</button>
+  <button (click)="getAddress()">Addresses</button>
+  <button (click)="getPartners()">Partners</button>
+  <button (click)="getEmails()">Emails</button>
+  <button (click)="getButtons()">Footer Buttons</button>
+  <button (click)="showPassword()">Change password</button>
+</div>
+
+
+<ng-container *ngIf="watchingPartners">
+
+  <div style="width: 100%;display: flex;justify-content: center">
+    <button (click)="showPartnerForm()">Add Partner</button>
+  </div>
+
+
+  <ng-container *ngFor="let item of partners">
+
+    <div style="margin-top: 30px; flex-direction: column" class="mainBlock blackBorder">
+
+
+      <h1 *ngIf="item.ispublish">Published</h1>
+
+
+      <h1 *ngIf="!item.ispublish">Unpublished</h1>
+
+      <p>URL: {{item.url}}</p>
+
+      <img style="width: 30%;" *ngIf="item.logoId" [src]="imagePath + item.logoId " [alt]="item.logoId">
+
+      <div>
+        <button *ngIf="!item.ispublish" (click)="publishPartner(item.id)">Publish</button>
+        <button *ngIf="item.ispublish" (click)="unpublishPartner(item.id)">UnPublish</button>
+        <button (click)="startUrlEdit(item.id,item)">edit</button>
+        <button (click)="deletePartner(item.id)">delete everything</button>
+        <button (click)="deletePartnerLogo(item.id,item.logoId)">delete logo</button>
+        <label style="padding:10px 0 10px 0; width: 50%; display: flex; justify-content: center " class="button"
+               [for]="'filePartnerInput-' + item.id">
+          <div> Add Logo</div>
+        </label>
+        <input
+          [id]="'filePartnerInput-' + item.id"
+          type="file"
+          (change)="onFileSelected($event, item,'foo', 'partner')"
+          name="image"
+          accept="image/*"
+          required
+          style="display: none;"
+        />
+
+      </div>
+
+
+    </div>
+
+
+  </ng-container>
+
+
+</ng-container>
+
+<ng-container *ngIf="watchingAddresses">
+
+  <div style="width: 100%;display: flex;justify-content: center">
+    <button (click)="showAdresForm()">Add Address</button>
+
+  </div>
+
+
+  <ng-container *ngFor="let item of addresses">
+
+    <div style="margin-top: 30px; flex-direction: column" class="mainBlock blackBorder">
+
+
+      <h1 *ngIf="item.ispublish">Published</h1>
+
+
+      <h1 *ngIf="!item.ispublish">Unpublished</h1>
+
+      <p>Country: {{item.country}}</p>
+
+      <p>City: {{item.city}}</p>
+
+      <p>Address: {{item.address}}</p>
+
+      <p>Postal Code: {{item.code}}</p>
+
+
+      <div>
+        <button *ngIf="!item.ispublish" (click)="publishAddress(item.id)">Publish</button>
+        <button *ngIf="item.ispublish" (click)="unpublishAddress(item.id)">UnPublish</button>
+        <button (click)="startAddressEdit(item.id,item)">edit</button>
+        <button (click)="deleteAddress(item.id)">delete</button>
+      </div>
+
+
+    </div>
+
+
+  </ng-container>
+
+
+</ng-container>
+
+<ng-container *ngIf="watchingButtons">
+  <div style="margin-top: 20px" class="chooseBlocks">
+    <ng-container *ngFor="let item of buttons">
+      <div style="min-width: 200px;padding: 20px" class="blackBorder chooseBlock">
+        <h1>{{item.name}}</h1>
+        <p>URL: {{item.url}}</p>
+
+
+        <form class="form" [formGroup]="buttonsForm[item.id]" (ngSubmit)="buttonsSubmit(item.id)">
+
+          <input type="text" placeholder="URL..." formControlName="url" id="url"/>
+          <button [disabled]="buttonsForm[item.id].invalid" type="submit">submit</button>
+        </form>
+
+
+        <p *ngIf="item.active">active</p>
+        <p *ngIf="!item.active">disabled</p>
+
+
+        <button (click)="disableButton(item.id)" *ngIf="item.active">disable</button>
+        <button (click)="activateButton(item.id)" *ngIf="!item.active">activate</button>
+
+      </div>
+    </ng-container>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="showPasswordForm">
+
+  <form class="form" [formGroup]="passwordForm" (ngSubmit)="passwordSubmit()">
+
+    <div class="FormInput">
+      <label style="color: #000;" for="text">New Password</label>
+      <input type="text" formControlName="password" id="password"/>
+    </div>
+
+    <div class="formButtons">
+      <button (click)="closeForm()" type="reset">cancel</button>
+      <button type="submit" [disabled]="passwordForm.invalid">Submit</button>
+    </div>
+  </form>
+
+
+</ng-container>
+
+<ng-container *ngIf="watchingCrew">
+  <div class="topButtons">
+    <button (click)="showAddCrewForm()">Add Crew</button>
+  </div>
+
+
+  <ng-container *ngIf="singleCrew">
+
+
+    <div class="blackBorder mainBlock">
+      <div class="contentBlock">
+
+        <ng-container *ngIf="singleCrew.publish">
+          <div>
+            <h1>Published</h1>
+          </div>
+        </ng-container>
+
+
+        <ng-container *ngIf="!singleCrew.publish">
+          <div>
+            <h1>Unpublished</h1>
+          </div>
+        </ng-container>
+
+
+        <ng-container *ngIf="singleCrew.page">
+          <div>
+            <h1>Has Own Page</h1>
+          </div>
+        </ng-container>
+
+
+        <ng-container *ngIf="!singleCrew.page">
+          <div>
+            <h1>No Own page</h1>
+          </div>
+        </ng-container>
+
+
+        <div>
+          <p>Name: {{singleCrew.name}}</p>
+          <p>Surname: {{singleCrew.surname}}</p>
+        </div>
+
+        <div>
+          <p>Position: {{singleCrew.position}}</p>
+          <p>Filter: {{singleCrew.filter}}</p>
+          <p>Bio: {{singleCrew.bio}}</p>
+          <div [innerHTML]="'Detailed Bio: ' + singleCrew.detailBio"></div>
+
+
+        </div>
+
+        <div>
+          <p>PhoneNumber: {{singleCrew.phoneNumber}}</p>
+          <p>Email: {{singleCrew.email}}</p>
+        </div>
+
+
+        <div>
+
+          <p>Image:</p>
+
+
+          <ng-container *ngIf="singleCrew.photoUrl">
+            <img style="width: 100%" [src]=" imagePath + singleCrew.photoUrl "
+                 alt="Crew Image">
+            <button (click)="removeCrewPhoto(singleCrew.id, singleCrew.photoUrl)">remove photo</button>
+          </ng-container>
+
+          <ng-container *ngIf="!singleCrew.photoUrl">
+            <p>There Are No Image</p>
+
+          </ng-container>
+
+        </div>
+
+
+        <h1>Projects:</h1>
+
+        <ng-container *ngFor="let project of singleCrew.projects">
+          {{project.projectTitle}}
+        </ng-container>
+      </div>
+
+      <div class="blockButtons">
+        <button (click)="showEditCrew(singleCrew)">Edit Crew</button>
+        <button (click)="startDetailsEdit(singleCrew.id,singleCrew.detailBio)">Edit Detailed Bio</button>
+        <button (click)="deleteCrew(singleCrew.id)">Delete Crew</button>
+        <label style="padding:10px 0 10px 0; width: 50%; display: flex; justify-content: center " class="button"
+               [for]="'fileCrewInput-' + singleCrew.id">
+          <div> Add Photo</div>
+        </label>
+        <input
+          [id]="'fileCrewInput-' + singleCrew.id"
+          type="file"
+          (change)="onFileSelected($event, singleCrew,'foo', 'crew')"
+          name="image"
+          accept="image/*"
+          required
+          style="display: none;"
+        />
+
+        <ng-container *ngIf="!singleCrew.publish">
+          <button (click)="publishCrew(singleCrew.id)">Publish</button>
+
+        </ng-container>
+
+        <ng-container *ngIf="singleCrew.publish">
+          <button (click)="unpublishCrew(singleCrew.id)">Unpublish</button>
+        </ng-container>
+
+      </div>
+    </div>
+
+  </ng-container>
+
+
+  <div class="chooseBlocks">
+    <ng-container *ngFor="let item of crews">
+
+      <div (click)="getSingleCrew(item.id,true)" class="blackBorder chooseBlock">
+
+        <h1>{{item.name}} {{item.surname}}</h1>
+        <img style="width: 100%" *ngIf="item.photoUrl" [src]=" imagePath + item.photoUrl "
+             alt="Crew Image">
+
+      </div>
+
+
+    </ng-container>
+  </div>
+
+
+</ng-container>
+
+<ng-container *ngIf="watchingProjects">
+
+
+  <div class="topButtons">
+    <button (click)="showAddProjectForm()">Add Project</button>
+    <button (click)="getPublishedProjects()">Show Published</button>
+    <button (click)="getUnPublishedProjects()">Show Unpublished</button>
+  </div>
+
+  <ng-container *ngIf="singleProject">
+    <div class="blackBorder mainBlock">
+
+
+      <div class="contentBlock">
+        <h2>{{ singleProject.projectTitle }}</h2>
+
+        <ng-container *ngIf="singleProject.publish">
+          <h1>Published</h1>
+        </ng-container>
+
+        <ng-container *ngIf="!singleProject.publish">
+          <h1>Not Published</h1>
+        </ng-container>
+
+        <ng-container *ngIf="singleProject.photoTitle">
+
+          <img style="width: 100%" *ngIf="singleProject.photoTitle" [src]=" imagePath + singleProject.photoTitle "
+               alt="Project Image">
+
+        </ng-container>
+
+
+        <p><strong>Year:</strong> {{ singleProject.year }}</p>
+        <p><strong>Country:</strong> {{ singleProject.country }}</p>
+        <p><strong>Slogan:</strong> {{ singleProject.slogan }}</p>
+        <p><strong>Director:</strong> {{ singleProject.director }}</p>
+        <p><strong>Script:</strong> {{ singleProject.script }}</p>
+        <p><strong>Producer:</strong> {{ singleProject.producer }}</p>
+        <p><strong>Director of Photography:</strong> {{ singleProject.directorOfPhotography }}</p>
+        <p><strong>Composer:</strong> {{ singleProject.composer }}</p>
+        <p><strong>Artist:</strong> {{ singleProject.artist }}</p>
+        <p><strong>Editing:</strong> {{ singleProject.editing }}</p>
+        <p><strong>Genre:</strong> {{ singleProject.genre }}</p>
+        <p><strong>Budget:</strong> {{ singleProject.budget }}</p>
+        <p><strong>Time:</strong> {{ singleProject.time }}</p>
+        <p><strong>Project Description:</strong> {{ singleProject.projectDescription }}</p>
+        <p><strong>Synopsis:</strong> {{ singleProject.synopsys }}</p>
+        <p><strong>Landing Page:</strong> {{ singleProject.is_landingPage }}</p>
+
+
+        <div style="border: 2px solid black;padding: 10px">
+          <h3>Prizes:</h3>
+          <ul>
+
+            <ng-container *ngFor="let prize of singleProject.prizes">
+              <li>{{ prize.prizeDescription }}</li>
+              <button (click)="deletePrize(prize.id)">remove prize</button>
+
+              <form [formGroup]="editPrizeForm" (ngSubmit)="editPrize(prize.id,singleProject.id)">
+                <input type="text" [placeholder]="prize.prizeDescription" formControlName="prizeDescription"
+                       id="prizeDescription"/>
+                <button [disabled]="editPrizeForm.invalid">edit Prize</button>
+              </form>
+            </ng-container>
+
+
+          </ul>
+        </div>
+
+        <div style="border: 2px solid black;padding: 10px">
+          <h3>Participation:</h3>
+
+
+          <ul>
+
+            <ng-container *ngFor="let participation of singleProject.participation">
+              <li>{{ participation.participationDescription }}</li>
+              <button (click)="deleteParticipation(participation.id)">delete participation</button>
+
+              <form [formGroup]="editParticipationForm"
+                    (ngSubmit)="editParticipation(participation.id,singleProject.id)">
+                <input type="text" [placeholder]="participation.participationDescription"
+                       formControlName="participationDescription" id="participationDescription"/>
+                <button [disabled]="editParticipationForm.invalid">edit Participation</button>
+              </form>
+
+            </ng-container>
+
+
+          </ul>
+        </div>
+
+
+        <h3>Filter:</h3>
+        <p>{{ singleProject.filter }}</p>
+
+        <div style="border: 2px solid black;padding: 10px">
+          <h3>Crews:</h3>
+          <ul>
+            <li *ngFor="let crew of singleProject.crews">
+              <p>{{ crew.name }} {{crew.surname}}</p>
+              <p><strong>Position:</strong> {{ crew.position }}</p>
+              <button (click)="removeCrewFromProject(crew.id,singleProject.id)">remove from project</button>
+            </li>
+          </ul>
+        </div>
+
+
+        <h3>Images:</h3>
+        <ul>
+          <li *ngFor="let image of singleProject.images">
+            <img style="width: 300px" *ngIf="image" [src]=" imagePath + image "
+                 alt="Project Image">
+            <button (click)="removePhoto(singleProject.id,image)">remove photo</button>
+          </li>
+        </ul>
+
+        <h3>Video </h3>
+        <iframe
+          width="100%"
+          height="300px"
+          [src]="'https://www.youtube.com/embed/' + singleProject.videoUrl | video"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+
+
+        <div>
+
+
+        </div>
+
+
+        <!--      </form>-->
+
+
+      </div>
+
+      <div class="blockButtons ">
+        <button (click)="addCrewToProject(singleProject.id)">add crew</button>
+
+        <form style="width: 50%;" [formGroup]="prizeForm" (ngSubmit)="addPrize(singleProject.id)">
+          <input type="text" placeholder="prize" formControlName="prizeDescription" id="prizeDescription"/>
+          <button style="width: 100%; margin: 0 0 10px;" [disabled]="prizeForm.invalid">Add Prize</button>
+        </form>
+
+        <form style="width: 50%;" [formGroup]="participationForm" (ngSubmit)="addParticipation(singleProject.id)">
+          <input type="text" placeholder="participation" formControlName="participationDescription"
+                 id="participationDescription"/>
+          <button style="width: 100%; margin: 0 0 10px;" [disabled]="participationForm.invalid">Add Participation
+          </button>
+        </form>
+
+
+        <button (click)="showEditProject(singleProject)">Edit Project</button>
+        <button (click)="deleteProject(singleProject.id)">Delete Project</button>
+
+
+        <label style="padding:10px 0 10px 0; width: 50%; display: flex; justify-content: center " class="button"
+               [for]="'fileProjectInput-' + singleProject.id">
+          <div> Add Photo To Gallery</div>
+        </label>
+        <input
+          [id]="'fileProjectInput-' + singleProject.id"
+          type="file"
+          (change)="onFileSelected($event, singleProject,'foo', 'project')"
+          name="image"
+          accept="image/*"
+          required
+          style="display: none;"
+        />
+
+
+        <label style="padding:10px 0 10px 0; width: 50%; display: flex; justify-content: center " class="button"
+               [for]="'fileProjectTitlePhotoInput-' + singleProject.id">
+          <div> Add Poster</div>
+        </label>
+        <input
+          [id]="'fileProjectTitlePhotoInput-' + singleProject.id"
+          type="file"
+          (change)="onFileSelected($event, singleProject,'foo', 'projectTitle')"
+          name="image"
+          accept="image/*"
+          required
+          style="display: none;"
+        />
+
+        <button (click)="deleteTitlePhoto(singleProject.id, singleProject.photoTitle)">Remove Poster</button>
+
+
+        <button *ngIf="!singleProject.publish" (click)="publish(singleProject.id)">Publish</button>
+        <button *ngIf="singleProject.publish" (click)="unPublish(singleProject.id)">Unpublish</button>
+
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+
+  <div class="chooseBlocks">
+    <ng-container *ngFor="let project of projects">
+      <div (click)="getSingleProject(project.id, true)" class="blackBorder chooseBlock">
+
+        <h1>{{project.projectTitle}}</h1>
+        <img style="width: 100%" *ngIf="project.photoTitle" [src]=" imagePath + project.photoTitle "
+             alt="Project Image">
+      </div>
+    </ng-container>
+  </div>
+
+
+</ng-container>
+
+<ng-container *ngIf="watchingNews">
+
+  <div class="topButtons">
+    <button (click)="showAddNewsForm()">add news</button>
+  </div>
+
+  <ng-container *ngIf="singleNews">
+    <div class="mainBlock blackBorder">
+
+      <div class="contentBlock">
+
+        <h2>{{ singleNews.title }}</h2>
+
+
+        <ng-container *ngIf="singleNews.publish">
+          <div>
+            <h1>Published</h1>
+          </div>
+        </ng-container>
+
+
+        <ng-container *ngIf="!singleNews.publish">
+          <div>
+            <h1>Unpublished</h1>
+          </div>
+        </ng-container>
+
+
+        <h4>Tags</h4>
+        <ng-container *ngFor="let item of singleNews.tags;let i = index">
+          <p>{{i + 1}}. {{item}}</p>
+        </ng-container>
+
+
+        <p>{{ singleNews.titleDescription }}</p>
+
+
+        <ng-container *ngIf="singleNews.titlePhotoUrl">
+          <img style="width: 200px" *ngIf="singleNews.titlePhotoUrl" [src]="imagePath + singleNews.titlePhotoUrl">
+          <button (click)="deleteNewsImage(singleNews.id,singleNews.titlePhotoUrl)">delete news photo</button>
+        </ng-container>
+
+
+        <p> Date : {{ singleNews.customDate }}</p>
+
+        <div *ngIf="singleNews.newsSection.length > 0">
+          <h3>News Sections:</h3>
+          <div style="border: 1px solid black;padding: 10px" *ngFor="let section of singleNews.newsSection">
+            <h4>Title: {{ section.sectionTitle }}</h4>
+            <p>Description: {{ section.sectionDescription }}</p>
+
+            <ng-container *ngIf="section.sectionPhotoUrl">
+              <img style="width: 200px"
+                   [src]="imagePath + section.sectionPhotoUrl">
+            </ng-container>
+
+
+            <div class="blockButtons buttonFix">
+              <button (click)="startSectionEdit(section.id, section,singleNews.id,section.sectionDescription)">edit
+                section
+              </button>
+              <button (click)="deleteSection(section.id,singleNews.id)">delete section</button>
+              <label style="padding:10px 0 10px 0; width: 50%; display: flex; justify-content: center " class="button "
+                     [for]="'fileSectionInput-' + section.id">
+                <div> Add Section Photo</div>
+              </label>
+              <input
+                [id]="'fileSectionInput-' + section.id"
+                type="file"
+                (change)="onFileSelected($event, section,singleNews, 'section')"
+                name="image"
+                accept="image/*"
+                required
+                style="display: none;"
+              />
+
+              <button (click)="deleteSectionImage(section.id,section.sectionPhotoUrl,singleNews.id)">delete Section
+                photo
+              </button>
+
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="blockButtons">
+        <button (click)="startNewsEdit(singleNews.id,singleNews)">edit</button>
+        <button (click)="showSectionForm(singleNews.id)">add section</button>
+        <button (click)="deleteNews(singleNews.id)">delete news</button>
+
+        <label style="padding:10px 0 10px 0; width: 50%; display: flex; justify-content: center " class="button "
+               [for]="'fileNewsInput-' + singleNews.id">
+          <div> Add News Photo</div>
+        </label>
+        <input
+          [id]="'fileNewsInput-' + singleNews.id"
+          type="file"
+          (change)="onFileSelected($event, singleNews,'foo', 'news')"
+          name="image"
+          accept="image/*"
+          required
+          style="display: none;"
+        />
+
+        <ng-container *ngIf="!singleNews.publish">
+          <button (click)="publishNews(singleNews.id)">Publish</button>
+
+        </ng-container>
+
+        <ng-container *ngIf="singleNews.publish">
+          <button (click)="unpublishNews(singleNews.id)">Unpublish</button>
+        </ng-container>
+      </div>
+
+
+    </div>
+  </ng-container>
+
+  <div class="chooseBlocks">
+    <ng-container *ngFor="let item of news">
+      <div (click)="getSingleNews(item.id,true)" class="blackBorder chooseBlock">
+
+        <h1>{{item.title}}</h1>
+
+      </div>
+    </ng-container>
+  </div>
+
+
+</ng-container>
+
+<ng-container *ngIf="watchingVacancy">
+
+  <div class="topButtons">
+    <button (click)="showVacancy()">add vacancy</button>
+  </div>
+
+  <ng-container *ngIf="singleVacancy">
+
+    <div class="blackBorder mainBlock">
+      <div class="contentBlock">
+        <div>
+          <h2>{{singleVacancy.jobTitle}}</h2>
+
+          <h3>Job Description:</h3>
+          <p>{{singleVacancy.jobDescription}}</p>
+
+          <h3>Job Requirements:</h3>
+          <p>{{singleVacancy.jobRequirements}}</p>
+
+
+          <h3>Contact Information:</h3>
+          <p>{{singleVacancy.contactInformation}}</p>
+
+          <h3>Location:</h3>
+          <p>{{singleVacancy.location}}</p>
+
+          <h3>Specialization:</h3>
+          <p>{{singleVacancy.specialization}}</p>
+
+          <h3>Qualification:</h3>
+          <p>{{singleVacancy.qualification}}</p>
+
+          <h3>Contact us URL:</h3>
+          <p>{{singleVacancy.vacancyUrl}}</p>
+
+          <h3>Url to this job:</h3>
+          <p>{{baseUrl + '/jobs?id=' + singleVacancy.id}}</p>
+
+          <ng-container *ngIf="singleVacancy.project">
+            <h3>PROJECT</h3>
+            <p>"{{singleVacancy.project.projectTitle}}"</p>
+            <button (click)="removePrFromVacancy(singleVacancy.id,singleVacancy.project.id)">remove project</button>
+          </ng-container>
+
+          <ng-container *ngIf="singleVacancy.vanish">
+            <p>published</p>
+            <button (click)="unPublishVacancy(singleVacancy.id)">click to unpublish</button>
+          </ng-container>
+
+          <ng-container *ngIf="!singleVacancy.vanish">
+            <p>unpublished</p>
+            <button (click)="publishVacancy(singleVacancy.id)">click to publish</button>
+          </ng-container>
+        </div>
+
+      </div>
+      <div class="blockButtons">
+        <button (click)="startVacancyEdit(singleVacancy.id, singleVacancy)">edit vacancy</button>
+        <button (click)="deleteVacancy(singleVacancy.id)">delete vacancy</button>
+        <button (click)="startAddingProject(singleVacancy.id)">add project to vacancy</button>
+      </div>
+    </div>
+
+  </ng-container>
+
+  <div class="chooseBlocks">
+    <ng-container *ngFor="let item of vacancy">
+      <div (click)="getSingleVacancy(item.id,true)" class="blackBorder chooseBlock">
+
+        <h1>{{item.jobTitle}}</h1>
+
+      </div>
+    </ng-container>
+  </div>
+
+
+</ng-container>
+
+<ng-container *ngIf="watchingText">
+
+  <ng-container *ngFor="let item of text">
+
+    <div style="margin-top: 30px; flex-direction: column" class="mainBlock blackBorder">
+
+
+      <div style="border-bottom: 1px solid black"><h1 style="text-align: center">{{item.page}}</h1></div>
+
+      <div [innerHTML]="item.text" style="width: 100%" class="contentBlock">
+
+
+      </div>
+
+      <h1>Main Image:</h1>
+      <img *ngIf="item.photoUrl" [src]="item.photoUrl">
+
+
+      <h1>Gallery Images</h1>
+      <ng-container *ngFor="let im of item.images">
+
+        <img [src]="im" [alt]="im">
+        <button (click)="removeGalleryPhoto(item,im)">Remove Gallery Photo</button>
+
+      </ng-container>
+
+
+      <div>
+        <button (click)="startTextEdit(item.id,item)" style="width: 50%;">edit</button>
+        <label style="padding:10px 0 10px 0; width: 50%; display: flex; justify-content: center " class="button"
+               [for]="'PageImageInput-' + item.id">
+          <div> Add Main Photo</div>
+        </label>
+        <input
+          [id]="'PageImageInput-' + item.id"
+          type="file"
+          (change)="onFileSelected($event, item,'foo', 'page')"
+          name="image"
+          accept="image/*"
+          required
+          style="display: none;"
+        />
+        <label style="padding:10px 0 10px 0; width: 50%; display: flex; justify-content: center " class="button"
+               [for]="'PageGalleryImageInput-' + item.id">
+          <div> Add Photo to Gallery</div>
+        </label>
+        <input
+          [id]="'PageGalleryImageInput-' + item.id"
+          type="file"
+          (change)="onFileSelected($event, item,'foo', 'pageGallery')"
+          name="image"
+          accept="image/*"
+          required
+          style="display: none;"
+        />
+      </div>
+    </div>
+  </ng-container>
+</ng-container>
+
+<ng-container *ngIf="watchingEmails">
+  <ol>
+    <ng-container *ngFor="let item of emails">
+      <li>{{item.email}}</li>
+    </ng-container>
+  </ol>
+</ng-container>
+
+
+<!---------V---------------------V----------------->
+<!---------V------Forms----------V----------------->
+
+
+<ng-container *ngIf="showProjectForm">
+  <div class="blackBackground">
+
+    <form class="form" [formGroup]="projectForm" (ngSubmit)="projectSubmit()">
+
+      <div class="inputs">
+        <div class="FormInput">
+          <label for="projectTitle">Project Title:</label>
+          <input type="text" formControlName="projectTitle">
+        </div>
+
+        <div class="FormInput">
+          <label for="year">Year:</label>
+          <input type="text" formControlName="year">
+        </div>
+
+        <div class="FormInput">
+          <label for="country">Country:</label>
+          <input type="text" formControlName="country">
+        </div>
+
+        <div class="FormInput">
+          <label for="slogan">Slogan:</label>
+          <input type="text" formControlName="slogan">
+        </div>
+
+        <div class="FormInput">
+          <label for="director">Director:</label>
+          <input type="text" formControlName="director">
+        </div>
+
+        <div class="FormInput">
+          <label for="script">Script:</label>
+          <input type="text" formControlName="script">
+        </div>
+
+        <div class="FormInput">
+          <label for="producer">Producer:</label>
+          <input type="text" formControlName="producer">
+        </div>
+
+        <div class="FormInput">
+          <label for="directorOfPhotography">Director of Photography:</label>
+          <input type="text" formControlName="directorOfPhotography">
+        </div>
+
+        <div class="FormInput">
+          <label for="composer">Composer:</label>
+          <input type="text" formControlName="composer">
+        </div>
+
+        <div class="FormInput">
+          <label for="artist">Artist:</label>
+          <input type="text" formControlName="artist">
+        </div>
+
+        <div class="FormInput">
+          <label for="editing">Editing:</label>
+          <input type="text" formControlName="editing">
+        </div>
+
+
+        <div class="FormInput">
+          <label for="genre">Genre:</label>
+          <input type="text" formControlName="genre">
+        </div>
+
+        <div class="FormInput">
+          <label for="budget">Budget:</label>
+          <input type="text" formControlName="budget">
+        </div>
+
+        <div class="FormInput">
+          <label for="time">Time:</label>
+          <input type="text" formControlName="time">
+        </div>
+
+        <div class="FormInput">
+
+          <label for="projectDescription">Project Description:</label>
+          <textarea formControlName="projectDescription"></textarea>
+        </div>
+
+        <div class="FormInput">
+          <label for="synopsys">Synopsys:</label>
+          <input type="text" formControlName="synopsys">
+        </div>
+
+        <div class="FormInput">
+          <label for="filter">Filter:</label>
+          <select formControlName="filter">
+            <option value="culturalProjects">Cultural Project</option>
+            <option value="distribution">Distribution</option>
+            <option value="animationService">Animation Service</option>
+            <option value="inProduction">In Production</option>
+            <option value="inDevelopment">In Development</option>
+
+          </select>
+        </div>
+
+
+        <div class="FormInput">
+          <label for="videoUrl">Video's Youtube ID</label>
+          <input type="text" formControlName="videoUrl">
+        </div>
+
+
+        <div class="FormInput">
+          <label for="is_landingPage">Landing Page URL</label>
+          <input type="text" formControlName="is_landingPage">
+        </div>
+
+      </div>
+      <div class="formButtons">
+        <button (click)="closeForm()" type="reset">Cancel</button>
+        <button type="submit">Submit</button>
+      </div>
+    </form>
+
+  </div>
+
+</ng-container>
+
+<ng-container *ngIf="showCrewForm">
+  <div class="blackBackground">
+
+    <form class="form" [formGroup]="crewForm" (ngSubmit)="crewSubmit()">
+
+      <div class="inputs">
+        <div class="FormInput">
+          <label for="name">Name:</label>
+          <input type="text" formControlName="name" id="name"/>
+        </div>
+
+        <div class="FormInput">
+          <label for="surname">Surname:</label>
+          <input type="text" formControlName="surname" id="surname"/>
+        </div>
+
+        <div class="FormInput">
+          <label for="position">Position:</label>
+          <input type="text" formControlName="position" id="position"/>
+        </div>
+
+
+        <div class="FormInput">
+          <label for="filter">Filter:</label>
+          <select formControlName="filter">
+            <option value="Staff">Staff</option>
+            <option value="Talents">Talents</option>
+            <option value="Distribution">Distribution</option>
+            <option value="Producer">Producer</option>
+
+          </select>
+        </div>
+
+        <div class="FormInput">
+          <label for="page">Own Page:</label>
+          <select formControlName="page">
+            <option value="true">YES</option>
+            <option value="false">NO</option>
+          </select>
+        </div>
+
+
+        <div class="FormInput">
+          <label for="phoneNumber">PhoneNumber:</label>
+          <input type="text" formControlName="phoneNumber" id="phoneNumber"/>
+        </div>
+
+        <div class="FormInput">
+          <label for="email">Email:</label>
+          <input type="email" formControlName="email" id="email"/>
+        </div>
+
+        <div class="FormInput">
+          <label for="bio">Bio:</label>
+          <textarea formControlName="bio" id="bio"></textarea>
+        </div>
+
+        <!--        <div class="FormInput">-->
+        <!--          <label for="detailBio">Detailed Bio:</label>-->
+        <!--          <textarea formControlName="detailBio" id="detailBio"></textarea>-->
+        <!--        </div>-->
+
+      </div>
+
+      <div class="formButtons">
+        <button (click)="closeForm()" type="reset">cancel</button>
+        <button type="submit" [disabled]="crewForm.invalid">Submit</button>
+      </div>
+
+    </form>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="showNewsForm">
+  <div class="blackBackground">
+
+    <form class="form" [formGroup]="newsForm" (ngSubmit)="newsSubmit()">
+
+      <div class="inputs newsFix">
+        <div class="FormInput">
+          <label for="title">Title:</label>
+          <input type="text" formControlName="title" id="title"/>
+        </div>
+
+        <div class="FormInput">
+          <label for="surname">Title description:</label>
+          <textarea formControlName="titleDescription" id="titleDescription"></textarea>
+        </div>
+
+        <div class="FormInput">
+          <label for="customDate">Custom Date</label>
+          <input type="date" formControlName="customDate" id="customDate"/>
+        </div>
+
+        <div class="FormInput">
+          <label for="tags">Tags (*split tags with "comma")</label>
+          <input type="text" formControlName="tags" id="tags"/>
+        </div>
+
+
+      </div>
+
+      <div class="formButtons">
+        <button (click)="closeForm()" type="reset">cancel</button>
+        <button type="submit" [disabled]="newsForm.invalid">Submit</button>
+      </div>
+
+    </form>
+
+  </div>
+
+</ng-container>
+
+<ng-container *ngIf="showAddCrewToProject">
+  <div class="blackBackground">
+
+    <div class="addCrewFather ">
+
+      <div class="inputs">
+        <ng-container *ngFor="let crew of addCrewArr">
+          <div style="margin: 10px; color: white;text-align: center" class="blackBorder">
+            <p>{{crew.name}} {{crew.surname}}</p>
+            <button (click)="addToProject(crew.id)">add to project</button>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="formButtons">
+        <button (click)="closeAddCrew()">close</button>
+      </div>
+
+
+    </div>
+
+
+  </div>
+</ng-container>
+
+<ng-container *ngIf="showSection">
+  <div class="blackBackground">
+    <editor [(ngModel)]="editorContent"></editor>
+    <div style="display: flex;justify-content:center;width:100% " class="formButtons">
+      <button (click)="closeForm()">Close</button>
+      <button (click)="sectionSubmit()">Save</button>
+    </div>
+
+
+  </div>
+</ng-container>
+
+<ng-container *ngIf="showVacancyForm">
+  <div class="blackBackground">
+
+    <form class="form" [formGroup]="vacancyForm" (ngSubmit)="vacancySubmit()">
+
+      <div class="inputs newsFix">
+
+        <div class="FormInput">
+          <label for="jobTitle">Job Title</label>
+          <input type="text" formControlName="jobTitle" id="jobTitle"/>
+        </div>
+
+
+        <div class="FormInput">
+          <label for="jobRequirements">Job Requirements</label>
+          <input type="text" formControlName="jobRequirements" id="jobRequirements"/>
+        </div>
+
+        <div class="FormInput">
+          <label for="contactInformation">Contact Information</label>
+          <input type="text" formControlName="contactInformation" id="contactInformation"/>
+        </div>
+
+        <div class="FormInput">
+          <label for="jobDescription">Job Description</label>
+          <div style="height: auto;overflow: auto">
+            <textarea formControlName="jobDescription" id="jobDescription"></textarea>
+          </div>
+
+        </div>
+
+        <div class="FormInput">
+          <label for="specialization">Specialization:</label>
+          <input type="text" formControlName="specialization" id="specialization"/>
+        </div>
+
+        <div class="FormInput">
+          <label for="qualification">Qualification:</label>
+          <input type="text" formControlName="qualification" id="qualification"/>
+        </div>
+
+        <div class="FormInput">
+          <label for="location">Location:</label>
+          <input type="text" formControlName="location" id="location"/>
+        </div>
+
+
+        <div class="FormInput">
+          <label for="jobTitle">"contact us" url</label>
+          <input type="text" formControlName="vacancyUrl" id="vacancyUrl"/>
+        </div>
+
+
+      </div>
+
+      <div class="formButtons">
+        <button (click)="closeForm()" type="reset">cancel</button>
+        <button type="submit" [disabled]="vacancyForm.invalid">Submit</button>
+      </div>
+
+
+    </form>
+
+  </div>
+
+</ng-container>
+
+<ng-container *ngIf="showTextForm">
+  <div class="blackBackground">
+
+
+    <editor [(ngModel)]="editorContent"></editor>
+    <div style="display: flex;justify-content:center;width:100% " class="formButtons">
+      <button (click)="closeForm()" type="reset">cancel</button>
+      <button (click)="textSubmit()">Submit</button>
+    </div>
+
+
+  </div>
+</ng-container>
+
+<ng-container *ngIf="showDetailedBio">
+  <div class="blackBackground">
+    <editor [(ngModel)]="editorContent"></editor>
+    <div style="display: flex;justify-content:center;width:100% " class="formButtons">
+      <button (click)="closeForm()">Close</button>
+      <button (click)="bioSubmit()">Save</button>
+    </div>
+
+
+  </div>
+</ng-container>
+
+<ng-container *ngIf="showAddressForm">
+  <div class="blackBackground">
+
+    <form class="form" [formGroup]="addressForm" (ngSubmit)="addressSubmit()">
+
+      <div class="inputs newsFix">
+
+        <div class="FormInput">
+          <label for="county">Country:</label>
+          <select formControlName="country">
+            <option value="Ukraine">Ukraine</option>
+            <option value="Poland">Poland</option>
+          </select>
+        </div>
+
+        <div class="FormInput">
+          <label for="address">Address:</label>
+          <input type="text" formControlName="address" id="address"/>
+        </div>
+
+        <div class="FormInput">
+          <label for="city">City:</label>
+          <input type="text" formControlName="city" id="city"/>
+        </div>
+
+        <div class="FormInput">
+          <label for="code">Postal Code:</label>
+          <input type="text" formControlName="code" id="code"/>
+        </div>
+
+      </div>
+
+      <div class="formButtons">
+        <button (click)="closeForm()" type="reset">cancel</button>
+        <button type="submit" [disabled]="addressForm.invalid">Submit</button>
+      </div>
+
+
+    </form>
+
+  </div>
+
+</ng-container>
+
+<ng-container *ngIf="wathParnterForm">
+  <div class="blackBackground">
+
+    <form class="form" [formGroup]="partnerForm" (ngSubmit)="partnerSubmit()">
+
+      <div class="inputs newsFix">
+
+        <div class="FormInput">
+          <div class="FormInput">
+            <label for="url">URL:</label>
+            <input type="text" formControlName="url" id="url"/>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div class="formButtons">
+        <button (click)="closeForm()" type="reset">cancel</button>
+        <button type="submit" [disabled]="partnerForm.invalid">Submit</button>
+      </div>
+
+
+    </form>
+
+  </div>
+
+</ng-container>
+
+<ng-container *ngIf="showAddVacancyForm">
+  <div class="blackBackground">
+    <div class="addCrewFather ">
+      <div class="inputs">
+        <ng-container *ngFor="let project of addProjectArr">
+          <div style="margin: 10px; color: white;text-align: center" class="blackBorder">
+            <p>{{project.projectTitle}}</p>
+            <button (click)="addToVacancy(project.id)">add to vacancy</button>
+          </div>
+        </ng-container>
+      </div>
+      <div class="formButtons">
+        <button (click)="closeAddProject()">close</button>
+      </div>
+    </div>
+  </div>
+</ng-container>

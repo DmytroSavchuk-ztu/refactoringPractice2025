@@ -1,0 +1,100 @@
+
+.father {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.divswda {
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.qwx {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+ align-items: center;
+}
+
+.address {
+  height: 100%;
+  width: 28%;
+}
+
+
+.addresses {
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+
+
+}
+
+@media only screen and (max-width: 880px) {
+  .addresses {
+    margin-top: 300px !important;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .address {
+   width: 80%;
+  }
+
+  .qwx{
+    width: 80%;
+  }
+
+}
+
+
+.address {
+  border: 2px solid black;
+  min-width: 350px;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.address p {
+  text-align: start;
+}
+
+.address h1 {
+  text-align: center;
+  margin: 2px;
+}
+
+
+.sAddress {
+  cursor: pointer;
+  border-radius: 10px;
+  transition: ease-in-out 0.3s;
+  padding: 10px;
+}
+
+.sAddress:hover {
+  background-color: rgba(11, 11, 11, 0.09);
+}
+
+.bg {
+  background-image: url('/assets/pictures/projectsbackground.svg');
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0px;
+  z-index: -100;
+}
+
+

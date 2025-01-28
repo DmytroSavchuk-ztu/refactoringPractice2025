@@ -1,0 +1,77 @@
+<img *ngIf="!routeService.isRestrictedRoute()" (click)="goToHome()" class="logo" src="assets/smallDetails/logo.png">
+
+<button *ngIf="!routeService.isRestrictedRoute()" class="hamburger-button" mat-icon-button (click)="toggleMenu()">
+  <span class="line line1" [ngClass]="{'open': isMenuOpen}"></span>
+  <span class="line line2" [ngClass]="{'open': isMenuOpen}"></span>
+  <span class="line line3" [ngClass]="{'open': isMenuOpen}"></span>
+</button>
+
+<div *ngIf="!routeService.isRestrictedRoute()" class="header">
+  <img *ngIf="!routeService.isRestrictedRoute()" (click)="goToHome()" class="logo-phone" src="assets/smallDetails/horizontalLogo.png">
+
+
+  <button *ngIf="!routeService.isRestrictedRoute()" class="hamburger-button-phone" mat-icon-button (click)="toggleMenu()">
+    <span class="line line1" [ngClass]="{'open': isMenuOpen}"></span>
+    <span class="line line2" [ngClass]="{'open': isMenuOpen}"></span>
+    <span class="line line3" [ngClass]="{'open': isMenuOpen}"></span>
+  </button>
+</div>
+
+<article>
+  <router-outlet></router-outlet>
+</article>
+
+<footer>
+  <div *ngIf="!routeService.isRestrictedRouteAlt()" class="ftbg">
+    <div class="contentFooterFather">
+      <div style="width: 100%;">
+        <h2 style="text-align: center;margin: 0">Our contacts:</h2>
+      </div>
+      <div style="width: 100%;display: flex;justify-content: center">
+
+        <ul  style="display: flex;justify-content: center;width: 50%;padding: 0" class="messengers footer_messengers">
+          <ng-container *ngFor="let item of buttons">
+            <li style="list-style: none;margin: 10px" class="messengers_item"><a
+              [href]="item.url"
+              class="messengers_link" target="_blank"><img
+              [src]="getImageSrc(item.name)" class="messengers_icon" [alt]="item.name" decoding="async"
+              loading="lazy" height="20" width="20"></a></li>
+          </ng-container>
+        </ul>
+
+      </div>
+
+
+
+
+      <strong style="margin-bottom: 10px">Stay Informed</strong>
+      <div style="position: relative; width: 200px;">
+        <form [formGroup]="emailForm" (ngSubmit)="submitEmail()">
+          <input style="background: none; border-radius: 10px; width: 100%; height: 20px; border: 1px solid black; "
+                 placeholder="E-mail" formControlName="email" id="email"/>
+          <span *ngIf="emailForm.valid" (click)="submitEmail()"
+                style="margin: 0;position: absolute; right: 5px; top: 50%; cursor: pointer; transform: translateY(-50%);">✓</span>
+
+
+        </form>
+
+      </div>
+
+      <p style="text-align: center" *ngIf="success">Thank you for subscribing!</p>
+      <p style="text-align: center" *ngIf="error">Invalid email</p>
+    </div>
+  </div>
+</footer>
+
+<div [ngClass]="{'menu': true, 'open': isMenuOpen}">
+  <div class="options">
+    <a (click)="altToggleMenu()" routerLink="/projects">Projects</a>
+    <a (click)="altToggleMenu()" routerLink="/team">Team</a>
+    <a (click)="altToggleMenu()" routerLink="/news">News</a>
+    <a (click)="altToggleMenu()" routerLink="/jobs">Jobs</a>
+    <a (click)="altToggleMenu()" routerLink="/distribution">Distribution</a>
+    <a (click)="altToggleMenu()" routerLink="/animation">Animation Studio</a>
+    <a (click)="altToggleMenu()" routerLink="/shootingServices">Shooting Services In Poland</a>
+    <a (click)="altToggleMenu()" routerLink="/address">Contacts</a>
+  </div>
+</div>

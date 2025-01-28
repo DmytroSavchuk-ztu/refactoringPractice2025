@@ -1,0 +1,345 @@
+.blackBorder {
+  border: 5px solid #2e3a48;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.mainBlock {
+  margin: auto;
+  margin-bottom: 50px !important;
+  display: flex;
+  width: 90%;
+  /*justify-content: space-between;*/
+  /*align-items: center;*/
+  font-family: Arial, sans-serif;
+}
+
+
+.chooseBlocks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.chooseBlocks h1 {
+  margin: 0;
+}
+
+.chooseBlock {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  transition: ease-in-out 0.1s;
+  cursor: pointer;
+
+  max-width: 300px;
+}
+
+.chooseBlock:hover {
+  scale: 105%;
+}
+
+.blockButtons {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  margin-right: 30px;
+  width: 50%;
+}
+
+.buttonFix {
+  width: 100% !important;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+
+label {
+  width: 50%;
+}
+
+.blockButtons button {
+  width: 50%;
+}
+
+.blockButtons div {
+  width: 82%;
+}
+
+.blackBackground {
+  width: 100vw;
+  height: 100vh;
+  background: rgb(46, 58, 72, 0.73);
+  position: fixed;
+  top: 0;
+  overflow-y: scroll;
+
+}
+
+
+.form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex-wrap: wrap;
+  flex-direction: column;
+  color: white;
+
+}
+
+.inputs {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+/*.formButtons {*/
+
+/*}*/
+
+.FormInput {
+  margin: 20px;
+  width: 50%;
+}
+
+
+.addCrewFather {
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  width: 100%;
+  height: 100%;
+
+}
+
+
+.header {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  background-color: #2e3a48;
+  flex-wrap: wrap;
+}
+
+.header button {
+  margin:  10px;
+  padding: 10px 20px;
+  background-color: #4c7eaa;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.header button:hover {
+  background-color: #6fa2d2;
+}
+
+
+button {
+  margin: 10px;
+  padding: 10px;
+  background-color: #4c7eaa;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #6fa2d2;
+}
+
+
+.button {
+  margin: 10px;
+  padding: 10px;
+  background-color: #4c7eaa;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100px;
+  text-align: center;
+}
+
+.button:hover {
+  background-color: #6fa2d2;
+}
+
+.topButtons {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+
+.contentBlock {
+  display: flex;
+  width: 50%;
+  justify-content: center;
+  align-items: start;
+  flex-direction: column;
+}
+
+
+input[type="text"], input[type="file"], input[type="email"] {
+  display: block;
+  width: 94%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #4c7eaa;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+
+select {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #4c7eaa;
+  background: white;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+
+input[type="email"]:focus, input[type="file"]:focus {
+  outline: none;
+  border-color: #6fa2d2;
+}
+
+input[type="file"] {
+  border: none;
+  color: transparent;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  visibility: hidden;
+}
+
+input[type="file"]::before {
+  content: 'Upload';
+  display: inline-block;
+  background: #4c7eaa;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 8px;
+  outline: none;
+  white-space: nowrap;
+  cursor: pointer;
+  text-align: center;
+  font-size: 16px;
+  color: white;
+}
+
+input[type="file"]:hover::before {
+  background: #6fa2d2;
+}
+
+
+textarea {
+  display: block;
+  width: 90%;
+  height: 250px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #4c7eaa;
+  border-radius: 5px;
+  font-size: 16px;
+  resize: none;
+
+}
+
+
+
+
+button:disabled {
+  opacity: 50%;
+}
+
+
+ul {
+  padding-left: 5px;
+}
+
+.newsFix {
+  flex-direction: column;
+  align-items: center
+}
+
+
+@media only screen and (max-width: 480px) {
+
+
+  .form {
+    padding: 10px;
+    width: 95%;
+  }
+
+  .newsFix {
+    flex-direction: unset;
+    align-items: unset;
+  }
+
+
+  .FormInput {
+    width: 100%;
+    margin: 5px 0;
+  }
+
+  .inputs {
+    flex-direction: column;
+  }
+
+  label {
+    font-size: 14px;
+  }
+
+  input[type="text"],
+  input[type="file"],
+  input[type="email"],
+  textarea {
+    font-size: 14px;
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+
+
+  button {
+    padding: 5px 10px;
+    font-size: 14px;
+    width: 100%; /* Make buttons span the full width for easier touch interaction */
+  }
+
+  .header button,
+  input[type="file"]::before {
+    font-size: 14px;
+    padding: 5px 10px;
+  }
+
+  .blackBorder {
+    padding: 5px;
+  }
+
+  .contentBlock {
+    width: 100%;
+  }
+}
+
+

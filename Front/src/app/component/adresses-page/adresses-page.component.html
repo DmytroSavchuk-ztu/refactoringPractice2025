@@ -1,0 +1,89 @@
+
+
+<div class="father">
+
+  <div class="divswda">
+    <h1 style="text-align: center">Addresses</h1>
+
+    <div *ngIf="addresses"  class="addresses">
+      <div class="address">
+        <h1>POLAND</h1>
+
+        <ng-container *ngFor="let item of addresses.Poland">
+          <hr>
+          <div class="sAddress">
+            <p>Address:{{item.address}}</p>
+            <p>City: {{item.city}}</p>
+            <p>Postal code (ZIP code): {{item.code}}</p>
+          </div>
+
+        </ng-container>
+
+      </div>
+      <div class="address">
+
+        <h1>UKRAINE</h1>
+
+        <ng-container *ngFor="let item of addresses.Ukraine">
+          <hr>
+          <div class="sAddress">
+            <p>Address:{{item.address}}</p>
+            <p>City: {{item.city}}</p>
+            <p>Postal code (ZIP code): {{item.code}}</p>
+          </div>
+
+        </ng-container>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div  class="divswda">
+    <h1 style="text-align: center">Contacts</h1>
+      <div class="qwx" >
+
+        <ul style="display: flex;justify-content: center;align-items: center;width: 100%"  class="address">
+          <ng-container *ngFor="let item of buttons">
+            <li style="list-style: none;margin: 10px" class="messengers_item"><a
+              [href]="item.url"
+              class="messengers_link" target="_blank"><img
+              [src]="getImageSrc(item.name)" class="messengers_icon" [alt]="item.name" decoding="async"
+              loading="lazy" height="20" width="20"></a></li>
+          </ng-container>
+        </ul>
+
+      </div>
+  </div>
+
+
+</div>
+
+
+
+
+<div class="bg"></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

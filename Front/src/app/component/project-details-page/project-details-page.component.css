@@ -1,0 +1,158 @@
+
+.bg {
+  background-image: url('/assets/pictures/bg (1).svg');
+  height: 100%;
+  width: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: fixed;
+  top: 0;
+  z-index: -100;
+}
+
+
+.father {
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+}
+
+
+.content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.title h1 {
+  font-size: 60px;
+  text-align: center;
+}
+
+
+.zavitushka {
+  position: relative;
+  top: 117px;
+  left: 133px;
+  pointer-events: none;
+}
+
+
+.imag {
+  margin: auto;
+  border-radius: 10px;
+  max-width: 800px;
+  max-height: 800px;
+
+}
+
+
+.pD {
+  width: 70%;
+  margin-left: 10px;
+}
+
+.p {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+
+}
+
+.description {
+  padding-left: 10px;
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+
+.projectDetailsAd {
+  display: flex;
+  width: 100%;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+
+.rewards {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin-left: 10px;
+}
+
+.prizes {
+  width: 50%;
+}
+
+
+.crews {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.crew {
+  margin: 10px;
+  position: relative;
+  width: 300px;
+}
+
+.crew img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  min-height: 300px;
+}
+
+.details {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: flex-start;
+
+  background: rgba(0, 0, 0, 0.86);
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.details p {
+  margin-left: 10px;
+}
+
+.crew:hover .details {
+  opacity: 1;
+}
+
+
+@media only screen and (max-width: 480px) {
+
+  .rewards {
+    flex-direction: column;
+  }
+
+  .imag{
+    max-width: 400px;
+  }
+
+
+}

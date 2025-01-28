@@ -1,0 +1,145 @@
+
+<ng-container *ngIf="project">
+
+  <div style="overflow-x: hidden;">
+    <div class="father">
+
+      <div class="content">
+
+        <div class="title">
+          <img class="zavitushka" src="assets/smallDetails/Group%20(2).svg">
+          <h1>{{project.projectTitle}}</h1>
+        </div>
+
+
+        <img class="imag" [src]="imagePath + project.photoTitle">
+
+
+
+
+        <div class="projectDetailsAd">
+          <div class="pD">
+
+            <div class="p">
+              <p class="opacity">Year</p>
+              <p>{{project.year}}</p>
+            </div>
+
+            <div class="p">
+              <p class="opacity">Script</p>
+              <p>{{project.script}}</p>
+            </div>
+
+            <div class="p">
+              <p class="opacity">Genre</p>
+              <p>{{project.genre}}</p>
+            </div>
+
+            <div class="p">
+              <p class="opacity">budget</p>
+              <p>{{project.budget}}</p>
+            </div>
+
+            <div class="p">
+              <p class="opacity">Composer</p>
+              <p>{{project.composer}}</p>
+            </div>
+
+            <div class="p">
+              <p class="opacity">Photo Director</p>
+              <p>{{project.directorOfPhotography}}</p>
+            </div>
+
+            <div class="p">
+              <p class="opacity">Artist</p>
+              <p>{{project.artist}}</p>
+            </div>
+
+            <div class="p">
+              <p class="opacity">Slogan</p>
+              <p>{{project.slogan}}</p>
+            </div>
+
+            <div class="p">
+              <p class="opacity">Editing</p>
+              <p>{{project.editing}}</p>
+            </div>
+
+            <div class="p">
+              <p class="opacity">Director</p>
+              <p>{{project.director}}</p>
+            </div>
+            <div class="p">
+              <p class="opacity">Producer</p>
+              <p>{{project.producer}}</p>
+            </div>
+
+            <div class="p">
+              <p class="opacity">Country</p>
+              <p>{{project.country}}</p>
+            </div>
+          </div>
+          <div class=" description">
+            <h1>Description</h1>
+            <p>
+              {{project.projectDescription}}
+            </p>
+            <h1>Synopsys</h1>
+            <p>
+              {{project.synopsys}}
+            </p>
+          </div>
+        </div>
+        <hr/>
+
+
+        <div class="rewards">
+          <div *ngIf="project.prizes.length > 0" class="prizes">
+            <h1>Rewards</h1>
+            <ul>
+              <ng-container *ngFor="let prize of project.prizes">
+                <li>{{prize.prizeDescription}}</li>
+              </ng-container>
+            </ul>
+          </div>
+          <div *ngIf="project.participation.length > 0" class="prizes">
+            <h1>Participations</h1>
+
+            <ul>
+              <ng-container *ngFor="let prize of project.participation">
+                <li>{{prize.participationDescription}}</li>
+              </ng-container>
+            </ul>
+          </div>
+        </div>
+        <hr/>
+
+      </div>
+    </div>
+
+    <div class="crews">
+
+      <ng-container *ngFor="let crew of project.crews">
+
+        <div class="crew">
+          <img [src]="imagePath + crew.photoUrl">
+          <div class="details">
+            <p>{{crew.name}} {{crew.surname}}</p>
+            <p style="opacity: 50%">{{crew.position}}</p>
+            <p>{{crew.phoneNumber}}</p>
+            <p>{{crew.email}}</p>
+            <p>{{crew.bio}}</p>
+          </div>
+        </div>
+
+
+      </ng-container>
+
+    </div>
+  </div>
+
+
+</ng-container>
+
+<div class="bg">
+</div>

@@ -1,0 +1,91 @@
+<div class="nameFather">
+
+  <img class="zavitushka" src="assets/smallDetails/Group%20(1).svg">
+  <h1>Jobs</h1>
+
+</div>
+
+<div *ngIf="!job" class="tablichka">
+  <table id="ta" datatable [dtOptions]="dtOptions" class="row-border hover"></table>
+</div>
+
+
+<div style="width: 100%;display: flex;justify-content: center">
+  <button *ngIf="job" (click)="getVacancy()" class="button">Show all Jobs</button>
+</div>
+
+<div style="width: 100%;display: flex;justify-content: center">
+  <div *ngIf="job" style="width: 80%" class="item">
+    <div>
+      <h2>{{job.jobTitle}}</h2>
+
+      <h3>Job Description:</h3>
+      <p>{{job.jobDescription}}</p>
+
+      <h3>Job Requirements:</h3>
+      <p>{{job.jobRequirements}}</p>
+
+
+      <h3>Contact Information:</h3>
+      <p>{{job.contactInformation}}</p>
+
+      <h3>Specialization:</h3>
+      <p>{{job.specialization}}</p>
+
+      <h3>Qualification:</h3>
+      <p>{{job.qualification}}</p>
+
+      <h3>Location:</h3>
+      <p>{{job.location}}</p>
+
+      <h3>Project:</h3>
+      <a style="color: black" [href]="baseUrl + '/projects/'+job.project.id"><p>{{job.project.projectTitle}}</p></a>
+
+      <button *ngIf="job.vacancyUrl" (click)="goByUrl(job.vacancyUrl)" class="button">Contact us</button>
+
+
+    </div>
+
+
+  </div>
+</div>
+
+
+<div class="wrapper">
+  <div class="projectsFather">
+    <ng-container *ngFor="let item of vacancy">
+      <div *ngIf="!job" (click)="getJob(item.id)" class="item">
+        <div>
+          <h2>{{item.jobTitle}}</h2>
+
+          <h3>Job Description:</h3>
+          <p>{{item.jobDescription | slice:0:100}}...</p>
+
+          <h3>Job Requirements:</h3>
+          <p>{{item.jobRequirements}}</p>
+
+          <h3>Contact Information:</h3>
+          <p>{{item.contactInformation}}</p>
+
+          <h3>Specialization:</h3>
+          <p>{{item.specialization}}</p>
+
+          <h3>Qualification:</h3>
+          <p>{{item.qualification}}</p>
+
+          <h3>Location:</h3>
+          <p>{{item.location}}</p>
+
+          <button *ngIf="item.vacancyUrl" (click)="goByUrl(item.vacancyUrl)" class="button">Contact us</button>
+
+        </div>
+
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+
+<div class="bg">
+
+</div>
