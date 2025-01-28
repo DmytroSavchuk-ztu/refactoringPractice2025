@@ -30,9 +30,7 @@ export class AdminPageComponent implements OnInit {
 
 
   ngOnInit() {
-
     const token = this.cookieService.get('access_token');
-
     if (!token) {
       console.log('No token found');
 
@@ -50,25 +48,7 @@ export class AdminPageComponent implements OnInit {
         console.log('Token is not expired');
       }
     }
-
-
-    this.createCrewForm()
-    this.createProjectForm()
-    this.createParticipationForm()
-    this.createPrizeForm()
-    this.createNewsForm()
-    this.createSectionForm()
-    this.createVacancyForm()
-    this.createEditParticipationForm()
-    this.createEditPrizeForm()
-    this.createTextForm()
-    this.createPasswordForm()
-    this.createAddressForm()
-    this.createPartnerForm()
-  }
-
-  createCrewForm() {
-    this.crewForm = this.formBuilder.group({
+    this.crewForm = this.createForm({
       name: [''],
       surname: [''],
       position: [''],
@@ -77,18 +57,11 @@ export class AdminPageComponent implements OnInit {
       phoneNumber: ['', [Validators.pattern(/^[\d+-]+$/)]],
       email: ['', [Validators.email]],
       filter: [''],
-
     });
-  }
-
-  createTextForm() {
-    this.textForm = this.formBuilder.group({
+    this.textForm = this.createForm({
       text: ['', Validators.required],
     });
-  }
-
-  createProjectForm() {
-    this.projectForm = this.formBuilder.group({
+    this.projectForm = this.createForm({
       projectTitle: [''],
       year: [''],
       country: [''],
@@ -107,53 +80,31 @@ export class AdminPageComponent implements OnInit {
       synopsys: [''],
       filter: [''],
       videoUrl: [''],
-      is_landingPage: ['']
+      is_landingPage: [''],
     });
-
-  }
-
-  createNewsForm() {
-    this.newsForm = this.formBuilder.group({
+    this.newsForm = this.createForm({
       title: ['', Validators.required],
       titleDescription: ['', Validators.required],
       customDate: ['date'],
-      tags: ['']
+      tags: [''],
     });
-  }
-
-  createPrizeForm() {
-    this.prizeForm = this.formBuilder.group({
+    this.prizeForm = this.createForm({
       prizeDescription: ['', Validators.required],
     });
-  }
-
-  createEditPrizeForm() {
-    this.editPrizeForm = this.formBuilder.group({
+    this.editPrizeForm = this.createForm({
       prizeDescription: ['', Validators.required],
     });
-  }
-
-  createSectionForm() {
-    this.sectionForm = this.formBuilder.group({
+    this.sectionForm = this.createForm({
       sectionTitle: ['', Validators.required],
-      sectionDescription: ['', Validators.required]
+      sectionDescription: ['', Validators.required],
     });
-  }
-
-  createParticipationForm() {
-    this.participationForm = this.formBuilder.group({
+    this.participationForm = this.createForm({
       participationDescription: ['', Validators.required],
     });
-  }
-
-  createEditParticipationForm() {
-    this.editParticipationForm = this.formBuilder.group({
+    this.editParticipationForm = this.createForm({
       participationDescription: ['', Validators.required],
     });
-  }
-
-  createVacancyForm() {
-    this.vacancyForm = this.formBuilder.group({
+    this.vacancyForm = this.createForm({
       jobTitle: ['', Validators.required],
       jobDescription: [''],
       contactInformation: [''],
@@ -161,14 +112,28 @@ export class AdminPageComponent implements OnInit {
       vacancyUrl: [''],
       specialization: [''],
       location: [''],
-      qualification: ['']
+      qualification: [''],
+    });
+    this.passwordForm = this.createForm({
+      password: ['', Validators.required],
+    });
+    this.addressForm = this.createForm({
+      country: [''],
+      address: [''],
+      city: [''],
+      code: [''],
+    });
+    this.partnerForm = this.createForm({
+      url: [''],
     });
   }
 
-  createPasswordForm() {
-    this.passwordForm = this.formBuilder.group({
-      password: ['', Validators.required],
-    });
+  createForm(fields: { [key: string]: any }) {
+    const group: any = {};
+    for (const field in fields) {
+      group[field] = fields[field];
+    }
+    return this.formBuilder.group(group);
   }
 
   createButtonForm() {
@@ -177,21 +142,6 @@ export class AdminPageComponent implements OnInit {
         url: ['', Validators.required]
       });
     }
-  }
-
-  createAddressForm() {
-    this.addressForm = this.formBuilder.group({
-      country: [''],
-      address: [''],
-      city: [''],
-      code: [''],
-    });
-  }
-
-  createPartnerForm() {
-    this.partnerForm = this.formBuilder.group({
-      url: [''],
-    });
   }
 
 
