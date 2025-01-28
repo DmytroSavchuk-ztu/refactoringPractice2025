@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {AdminService} from "../../services/admin.service";
-import {catchError, Observable, tap} from "rxjs";
+import {catchError, Observable, tap, throwError} from "rxjs";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {CookieService} from "ngx-cookie-service";
 import {Router} from "@angular/router";
@@ -13,7 +13,13 @@ interface DecodedToken {
 
   [key: string]: any;
 }
-
+interface StateMapping {
+  [key: string]: {
+    state: string;
+    watching: string;
+    form?: string;
+  };
+}
 
 @Component({
   selector: 'app-admin-page',
@@ -21,9 +27,6 @@ interface DecodedToken {
   styleUrls: ['./admin-page.component.css'],
 })
 export class AdminPageComponent implements OnInit {
-
-
-
 
 
   ngOnInit() {
@@ -162,13 +165,11 @@ export class AdminPageComponent implements OnInit {
     });
   }
 
-
   createPasswordForm() {
     this.passwordForm = this.formBuilder.group({
       password: ['', Validators.required],
     });
   }
-
 
   createButtonForm() {
     for (const button of this.buttons) {
@@ -177,7 +178,6 @@ export class AdminPageComponent implements OnInit {
       });
     }
   }
-
 
   createAddressForm() {
     this.addressForm = this.formBuilder.group({
@@ -292,413 +292,346 @@ export class AdminPageComponent implements OnInit {
 
   selectedImage!: File;
 
-  getButtons() {
-    this.adminService.getButtons()
+  //get functions
+
+  getData(type: keyof StateMapping, serviceMethod: any, id: number | null = null, scrollTop: boolean = false) {
+    serviceMethod(id)
       .pipe(
         tap((response: any) => {
-          this.watchingAddresses = false
-          this.watchingEmails = false
-          this.watchingButtons = true
-          this.watchingCrew = false
-          this.watchingProjects = false
-          this.watchingNews = false
-          this.watchingVacancy = false
-          this.buttons = response
-          this.watchingText = false
-          this.watchingPartners = false
-          this.text = null
-          this.watchingEmails = false
+          // Reset all states to initial values
+          this.resetAllStates();
 
-          this.showPasswordForm = false
-          this.singleProject = null
-          this.singleNews = null
-          this.singleVacancy = null
-          this.watchingEmails = false
-          this.createButtonForm()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe()
-  }
+          // Define state mappings
+          const stateMapping: StateMapping = {
+            buttons: { state: 'buttons', watching: 'watchingButtons', form: 'createButtonForm' },
+            crews: { state: 'crews', watching: 'watchingCrew' },
+            projects: { state: 'projects', watching: 'watchingProjects' },
+            news: { state: 'news', watching: 'watchingNews' },
+            vacancy: { state: 'vacancy', watching: 'watchingVacancy' },
+            text: { state: 'text', watching: 'watchingText' },
+            emails: { state: 'emails', watching: 'watchingEmails' },
+            address: { state: 'addresses', watching: 'watchingAddresses' },
+            partners: { state: 'partners', watching: 'watchingPartners' },
+            singleVacancy: { state: 'singleVacancy', watching: 'watchingVacancy' },
+            singleProject: { state: 'singleProject', watching: 'watchingProjects' },
+            singleCrew: { state: 'singleCrew', watching: 'watchingCrew' },
+            singleNews: { state: 'singleNews', watching: 'watchingNews' }
+          };
 
+          // Access the state and watching values from the stateMapping
+          const { state, watching, form } = stateMapping[type] || {};
 
-  getCrews() {
-    this.adminService.getCrewsAll()
-      .pipe(
-        tap((response: any) => {
-          this.watchingCrew = true
-          this.watchingProjects = false
-          this.watchingNews = false
-          this.watchingVacancy = false
-          this.crews = response
-          this.watchingText = false
-          this.text = null
-
-          this.watchingPartners = false
-          this.watchingAddresses = false
-          this.watchingEmails = false
-          this.watchingButtons = false
-          this.showPasswordForm = false
-          this.singleProject = null
-          this.singleNews = null
-          this.singleVacancy = null
-          this.watchingEmails = false
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe()
-  }
-
-
-  showPassword() {
-    this.showPasswordForm = true
-
-    this.watchingButtons = false
-    this.watchingPartners = false
-    this.watchingCrew = false
-    this.watchingProjects = false
-    this.watchingNews = false
-    this.watchingVacancy = false
-    this.watchingText = false
-    this.text = null
-    this.singleProject = null
-    this.singleNews = null
-    this.singleVacancy = null
-    this.singleCrew = null
-
-  }
-
-
-  getSingleCrew(id: number, scrollTop: boolean) {
-    this.adminService.getCrewById(id)
-      .pipe(
-        tap((response: any) => {
-
-          if (scrollTop) {
-            this.scrollTop()
+          if (state) {
+            this[state] = response;
           }
 
-          this.watchingPartners = false
-          this.watchingAddresses = false
-          this.watchingButtons = false
-          this.watchingCrew = true
-          this.watchingProjects = false
-          this.watchingNews = false
-          this.watchingVacancy = false
-          this.watchingText = false
-          this.text = null
-          this.singleCrew = response
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe()
-  }
-
-  getProjects() {
-    this.adminService.getAdminProjects()
-      .pipe(
-        tap((response: any) => {
-          this.watchingCrew = false
-          this.watchingProjects = true
-          this.watchingNews = false
-          this.watchingVacancy = false
-          this.projects = response
-          this.watchingText = false
-          this.text = null
-          this.watchingButtons = false
-
-          this.watchingPartners = false
-          this.watchingAddresses = false
-          this.showPasswordForm = false
-          this.singleNews = null
-          this.singleVacancy = null
-          this.singleCrew = null
-          this.watchingEmails = false
-          this.watchingButtons = false
-
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe()
-  }
-
-
-  getSingleProject(id: number, scrollTop: boolean) {
-    this.adminService.getProjectById(id)
-      .pipe(
-        tap((response: any) => {
-
-          if (scrollTop) {
-            this.scrollTop()
+          if (watching) {
+            this[watching] = true;
           }
 
-          this.watchingPartners = false
-          this.watchingAddresses = false
-          this.watchingText = false
-          this.text = null
-          this.watchingCrew = false
-          this.watchingProjects = true
-          this.watchingNews = false
-          this.watchingVacancy = false
-          this.singleProject = response
-          this.watchingEmails = false
+          if (form) {
+            this[form]();
+          }
 
-          this.watchingButtons = false
+          if (id) {
+            this[`single${(type as string).charAt(0).toUpperCase() + (type as string).slice(1)}`] = response;
+          }
+
+          if (scrollTop) {
+            this.scrollTop();
+          }
         }),
         catchError((error: any): Observable<any> => {
           throw error;
-        })
-      )
-      .subscribe()
-  }
-
-
-  getNews() {
-    this.adminService.getNews()
-      .pipe(
-        tap((response: any) => {
-          this.watchingCrew = false
-          this.watchingProjects = false
-          this.watchingVacancy = false
-          this.watchingNews = true
-          this.showPasswordForm = false
-          this.news = response
-          this.watchingText = false
-          this.text = null
-          this.watchingButtons = false
-
-          this.watchingPartners = false
-          this.watchingAddresses = false
-          this.watchingEmails = false
-          this.watchingButtons = false
-          this.singleProject = null
-          this.singleVacancy = null
-          this.singleCrew = null
-          this.watchingEmails = false
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe()
-  }
-
-  getVacancy() {
-    this.adminService.getVacancy()
-      .pipe(
-        tap((response: any) => {
-          this.watchingCrew = false
-          this.watchingProjects = false
-          this.watchingNews = false
-          this.watchingVacancy = true
-          this.watchingText = false
-          this.text = null
-          this.vacancy = response
-
-          this.watchingAddresses = false
-          this.watchingEmails = false
-          this.watchingButtons = false
-          this.showPasswordForm = false
-
-          this.watchingPartners = false
-          this.singleProject = null
-          this.singleNews = null
-          this.singleCrew = null
-          this.watchingEmails = false
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe()
-  }
-
-
-
-
-
-  getText() {
-    this.adminService.getText()
-      .pipe(
-        tap((response: any) => {
-          this.watchingCrew = false
-          this.watchingProjects = false
-          this.watchingNews = false
-          this.watchingVacancy = false
-          this.watchingText = true
-          this.text = response
-
-          this.watchingEmails = false
-          this.watchingButtons = false
-          this.showPasswordForm = false
-
-          this.watchingPartners = false
-          this.watchingAddresses = false
-          this.singleProject = null
-          this.singleNews = null
-          this.singleCrew = null
-          this.singleVacancy = null
-          this.watchingEmails = false
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe()
-  }
-
-
-  getPublishedProjects() {
-    this.adminService.getPublishedProjects()
-      .pipe(
-        tap((response: any) => {
-          this.watchingCrew = false
-          this.watchingProjects = true
-
-          this.watchingEmails = false
-
-          this.watchingPartners = false
-          this.watchingAddresses = false
-          this.watchingButtons = false
-          this.projects = response
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe()
-  }
-
-  getUnPublishedProjects() {
-    this.adminService.getUnpublishedProjects()
-      .pipe(
-        tap((response: any) => {
-          this.watchingCrew = false
-          this.watchingProjects = true
-
-          this.watchingPartners = false
-          this.watchingAddresses = false
-          this.watchingEmails = false
-          this.watchingButtons = false
-          this.projects = response
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe()
-  }
-
-
-  showAddProjectForm() {
-    this.showCrewForm = false
-    this.showProjectForm = true
-  }
-
-  showAddCrewForm() {
-    this.showCrewForm = true
-    this.showProjectForm = false
-  }
-
-
-  showSectionForm(id: number) {
-    this.showSection = true
-    this.sectionId = id
-
-  }
-
-  showAddNewsForm() {
-    this.showNewsForm = true;
-  }
-
-
-  deleteCrew(id: number) {
-    this.adminService.deleteCrew(id)
-      .pipe(
-        tap((response: any) => {
-          this.getCrews()
-          this.singleCrew = null
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-          this.getCrews()
         })
       )
       .subscribe();
+  }
+
+  resetAllStates() {
+    this.watchingCrew = false;
+    this.watchingProjects = false;
+    this.watchingNews = false;
+    this.watchingVacancy = false;
+    this.watchingText = false;
+    this.watchingEmails = false;
+    this.watchingButtons = false;
+    this.watchingPartners = false;
+    this.watchingAddresses = false;
+    this.showPasswordForm = false;
+    this.singleProject = null;
+    this.singleNews = null;
+    this.singleVacancy = null;
+    this.singleCrew = null;
+    this.text = null;
+  }
+
+  getButtons() {
+    this.getData('buttons', this.adminService.getButtons);
+  }
+  getCrews() {
+    this.getData('crews', this.adminService.getCrewsAll);
+  }
+  getSingleCrew(id: number, scrollTop: boolean) {
+    this.getData('singleCrew', this.adminService.getCrewById, id, scrollTop);
+  }
+  getProjects() {
+    this.getData('projects', this.adminService.getAdminProjects);
+  }
+  getSingleProject(id: number, scrollTop: boolean) {
+    this.getData('singleProject', this.adminService.getProjectById, id, scrollTop);
+  }
+  getNews() {
+    this.getData('news', this.adminService.getNews);
+  }
+  getVacancy() {
+    this.getData('vacancy', this.adminService.getVacancy);
+  }
+  getText() {
+    this.getData('text', this.adminService.getText);
+  }
+  getPublishedProjects() {
+    this.getData('projects', this.adminService.getPublishedProjects);
+  }
+  getUnPublishedProjects() {
+    this.getData('projects', this.adminService.getUnpublishedProjects);
+  }
+  getSingleVacancy(id: number, scrollTop: boolean) {
+    this.getData('singleVacancy', this.adminService.getVacancyById, id, scrollTop);
+  }
+  getSingleNews(id: number, scrollTop: boolean) {
+    this.getData('singleNews', this.adminService.getNewsById, id, scrollTop);
+  }
+  getEmails() {
+    this.getData('emails', this.adminService.getEmail);
+  }
+  getAddress() {
+    this.getData('addresses', this.adminService.getAddress);
+  }
+  getPartners() {
+    this.getData('partners', this.adminService.getPartner);
+  }
+  getProjectArr() {
+    this.getData('projects', this.adminService.getAdminProjects);
+  }
+
+  //show functions
+
+  showForm(formType: string, entity: any = null, id: number | null = null) {
+    // Hide all other forms
+    this.showCrewForm = false;
+    this.showProjectForm = false;
+    this.showSection = false;
+    this.showNewsForm = false;
+    this.showVacancyForm = false;
+    this.showAddressForm = false;
+    this.wathParnterForm = false;
+
+    // Set watching flags to false (if needed for other operations)
+    this.watchingButtons = false;
+    this.watchingPartners = false;
+    this.watchingCrew = false;
+    this.watchingProjects = false;
+    this.watchingNews = false;
+    this.watchingVacancy = false;
+    this.watchingText = false;
+
+    // Reset the content data (optional depending on your need)
+    this.text = null;
+    this.singleProject = null;
+    this.singleNews = null;
+    this.singleVacancy = null;
+    this.singleCrew = null;
+
+    // Show the appropriate form and manage editing if needed
+    switch (formType) {
+      case 'password':
+        this.showPasswordForm = true;
+        break;
+
+      case 'project':
+        this.showProjectForm = true;
+        if (entity) {
+          this.projectForm.patchValue(entity);
+          this.editingProject = true;
+          this.editProjectId = id;
+        }
+        break;
+
+      case 'crew':
+        this.showCrewForm = true;
+        if (entity) {
+          this.crewForm.patchValue(entity);
+          this.editingCrew = true;
+          this.editCrewId = id;
+        }
+        break;
+
+      case 'section':
+        this.showSection = true;
+        this.sectionId = id;
+        break;
+
+      case 'news':
+        this.showNewsForm = true;
+        break;
+
+      case 'vacancy':
+        this.showVacancyForm = true;
+        break;
+
+      case 'address':
+        this.showAddressForm = true;
+        break;
+
+      case 'partner':
+        this.wathParnterForm = true;
+        break;
+
+      default:
+        console.error("Unknown form type:", formType);
+    }
+  }
+
+  showPassword() {
+    this.showForm('password');
+  }
+  showAddProjectForm() {
+    this.showForm('project');
+  }
+  showAddCrewForm() {
+    this.showForm('crew');
+  }
+  showSectionForm(id: number) {
+    this.showForm('section', null, id);
+  }
+  showAddNewsForm() {
+    this.showForm('news');
+  }
+  showEditCrew(crew: any) {
+    this.showForm('crew', crew, crew.id);
+  }
+  showEditProject(project: any) {
+    this.showForm('project', project, project.id);
+  }
+  showPartnerForm() {
+    this.showForm('partner');
+  }
+  showVacancy() {
+    this.showForm('vacancy');
+  }
+  showAdresForm() {
+    this.showForm('address');
+  }
+
+
+  //delete functions
+
+  deleteItem(
+    deleteMethod: (id: number) => Observable<any>, // Метод для видалення
+    id: number,                                   // Ідентифікатор елемента
+    successCallbacks: (() => void)[] = [],        // Функції для успіху
+    errorCallbacks: (() => void)[] = []           // Функції для помилок
+  ) {
+    deleteMethod(id)
+      .pipe(
+        tap(() => {
+          successCallbacks.forEach(callback => callback());
+        }),
+        catchError((error: any): Observable<any> => {
+          errorCallbacks.forEach(callback => callback());
+          return throwError(error);
+        })
+      )
+      .subscribe();
+  }
+
+  deleteCrew(id: number) {
+    this.deleteItem(
+      this.adminService.deleteCrew.bind(this.adminService), // Метод для видалення
+      id,
+      [() => this.getCrews(), () => {
+        this.singleCrew = null;
+      }], // Успішні дії
+      [() => this.getCrews()]                                   // Дії при помилці
+    );
   }
 
   deleteProject(id: number) {
-    this.adminService.deleteProjects(id)
-      .pipe(
-        tap((response: any) => {
-          this.getProjects()
-          this.singleProject = null
+    this.deleteItem(
+      this.adminService.deleteProjects.bind(this.adminService),
+      id,
+      [() => this.getProjects(), () => {
+        this.singleProject = null;
+      }],
+      [() => this.getProjects()]
+    );
+  }
+
+  deletePrize(id: number) {
+    this.deleteItem(
+      this.adminService.deletePrize.bind(this.adminService),
+      id,
+      [() => this.getProjects(), () => this.getSingleProject(id, false)]
+    );
+  }
+
+  deleteParticipation(id: number) {
+    this.deleteItem(
+      this.adminService.deleteParticipation.bind(this.adminService),
+      id,
+      [() => this.getProjects(), () => this.getSingleProject(id, false)]
+    );
+  }
+
+
+  //form submits
+
+  submitForm(options: {
+    serviceMethod: (id: number, formData: any) => Observable<any>;
+    formData: any;
+    editing: boolean;
+    id: number | null;
+    postCreationActions?: () => void;
+    resetForm?: boolean;
+    closeFormFlag?: boolean;
+    resetFlags?: () => void;
+  }) {
+    const {serviceMethod, formData, editing, id, postCreationActions, resetForm, closeFormFlag, resetFlags} = options;
+    if (editing && id !== null) {
+      serviceMethod(id, formData).pipe(
+        tap(() => {
+          if (postCreationActions) postCreationActions();
         }),
         catchError((error: any): Observable<any> => {
           throw error;
-          this.getProjects()
         })
-      )
-      .subscribe();
+      ).subscribe();
+    } else if (!editing) {
+      serviceMethod(id as number, formData).pipe(
+        tap(() => {
+          if (postCreationActions) postCreationActions();
+        }),
+        catchError((error: any): Observable<any> => {
+          throw error;
+        })
+      ).subscribe();
+    }
+    if (resetForm) {
+      formData.reset();
+    }
+    if (closeFormFlag && resetFlags) {
+      resetFlags();
+    }
   }
 
-
-  showEditCrew(crew: any) {
-    this.showCrewForm = true;
-    this.crewForm.patchValue(crew);
-    this.editingCrew = true;
-    this.editCrewId = crew.id;
+  projectSubmit() {
+    if (this.editingProject) {
+      this.editProject()
+    } else {
+      this.createProject()
+    }
   }
-
-  showEditProject(project: any) {
-    this.showProjectForm = true;
-    this.projectForm.patchValue(project)
-    this.editingProject = true
-    this.editProjectId = project.id
-  }
-
-
-
-
-  closeForm() {
-    this.showCrewForm = false
-    this.wathParnterForm = false
-    this.showProjectForm = false
-    this.showNewsForm = false
-    this.showSection = false
-    this.showVacancyForm = false
-    this.showTextForm = false
-    this.editingCrew = false
-    this.editingNews = false
-    this.editingVacancy = false
-    this.editingProject = false
-    this.editingSection = false
-    this.showDistForm = false
-    this.editingDist = false
-    this.crewForm.reset()
-    this.projectForm.reset()
-    this.newsForm.reset()
-    this.sectionForm.reset()
-    this.vacancyForm.reset()
-    this.textForm.reset()
-    this.passwordForm.reset()
-    this.addressForm.reset()
-    this.partnerForm.reset()
-    this.editorContent = null
-    this.showDetailedBio = false
-    this.editingAddress = false
-    this.showAddressForm = false
-
-  }
-
   crewSubmit() {
 
     if (this.editingCrew) {
@@ -709,15 +642,987 @@ export class AdminPageComponent implements OnInit {
 
     this.closeForm()
   }
+  newsSubmit() {
+    if (this.editingNews) {
+      this.editNews()
+    } else {
+      this.addNews()
+    }
+    this.showNewsForm = false
+    this.newsForm.reset()
+  }
+  sectionSubmit() {
+    if (this.editingSection) {
+      this.editSection()
+    } else {
+      this.createSection()
+    }
+  }
+  vacancySubmit() {
+    if (this.editingVacancy) {
+      this.editVacancy()
+    } else {
+      this.createVacancy()
+    }
+  }
+  bioSubmit() {
+    let data = {
+      detailBio: this.editorContent
+    }
 
+
+    this.adminService.editCrew(this.editBioId, data)
+      .pipe(
+        tap(() => {
+          this.getCrews()
+          this.getSingleCrew(this.editBioId, false)
+          this.editBioId = null
+          // this.textForm.reset()
+          this.showDetailedBio = false
+          this.editorContent = null
+
+        }),
+        catchError((error: any): Observable<any> => {
+          throw error;
+        })
+      )
+      .subscribe();
+  }
+  passwordSubmit() {
+    this.submitForm({
+      serviceMethod: this.adminService.resetPass.bind(this.adminService),
+      formData: {email: 'admin', password: this.passwordForm.value.password},
+      editing: false,  // Password reset does not require an ID
+      id: null,
+      postCreationActions: () => {
+        this.passwordForm.reset();
+      },
+      resetForm: true,
+      closeFormFlag: true,
+      resetFlags: () => {
+      }
+    });
+  }
+  textSubmit() {
+    this.submitForm({
+      serviceMethod: this.adminService.changeText.bind(this.adminService),
+      formData: {text: this.editorContent},
+      editing: true,
+      id: this.editTextId,
+      postCreationActions: () => {
+        this.editTextId = null;
+        this.textForm.reset();
+        this.showTextForm = false;
+        this.editorContent = null;
+        this.getText();
+      },
+      resetForm: true,
+      closeFormFlag: true,
+      resetFlags: () => {
+        this.showTextForm = false;
+      }
+    });
+  }
+  addressSubmit() {
+    if (this.editingAddress) {
+      this.editAddress()
+    } else {
+      this.createAddress()
+    }
+  }
+  partnerSubmit() {
+    if (this.editingPartner) {
+      this.editPartner()
+    } else {
+      this.createPartner()
+    }
+  }
+  buttonsSubmit(id: number) {
+    const formData = this.buttonsForm[id].value;
+
+    this.adminService.changeButton(id, formData)
+      .pipe(
+        tap(() => {
+          this.getButtons();
+          this.buttonsForm[id].reset();
+        }),
+        catchError((error: any): Observable<any> => {
+          throw error;
+        })
+      )
+      .subscribe();
+  }
+
+  //create functions
+
+  performCreateOperation(options: {
+    serviceMethod: (...args: any[]) => Observable<any>; // Updated to support any number of arguments
+    formData: any;
+    postCreationActions?: () => void;
+    resetForm?: boolean;
+    closeFormFlag?: boolean;
+    resetFlags?: () => void;
+    additionalArgs?: any[]; // Optional additional arguments to pass
+  }) {
+    const {
+      serviceMethod,
+      formData,
+      postCreationActions,
+      resetForm,
+      closeFormFlag,
+      resetFlags,
+      additionalArgs
+    } = options;
+
+    if (additionalArgs) {
+      serviceMethod(formData, ...additionalArgs) // If additional arguments are provided, pass them
+        .pipe(
+          tap(() => {
+            if (postCreationActions) postCreationActions();
+          }),
+          catchError((error: any): Observable<any> => {
+            throw error;
+          })
+        )
+        .subscribe();
+    } else {
+      serviceMethod(formData) // If no additional arguments, just pass formData
+        .pipe(
+          tap(() => {
+            if (postCreationActions) postCreationActions();
+          }),
+          catchError((error: any): Observable<any> => {
+            throw error;
+          })
+        )
+        .subscribe();
+    }
+
+    if (resetForm) {
+      formData.reset();
+    }
+
+    if (closeFormFlag && resetFlags) {
+      resetFlags();
+    }
+  }
+
+  createProject() {
+    this.performCreateOperation({
+      serviceMethod: this.adminService.addNewProject.bind(this.adminService),
+      formData: this.projectForm.value,
+      postCreationActions: () => {
+        this.getProjects();
+      },
+      resetForm: true,
+      closeFormFlag: true,
+      resetFlags: () => {
+        this.showProjectForm = false;
+      }
+    });
+  }
 
   createCrew() {
     const formData = this.crewForm.value;
     formData.page = formData.page === 'true';
-    this.adminService.addNewCrew(formData)
+
+    this.performCreateOperation({
+      serviceMethod: this.adminService.addNewCrew.bind(this.adminService),
+      formData: formData,
+      postCreationActions: () => {
+        this.getCrews();
+      },
+      resetForm: true,
+      closeFormFlag: true,
+      resetFlags: () => {
+        this.showCrewForm = false;
+      }
+    });
+  }
+
+  createSection() {
+    let data = {
+      sectionDescription: this.editorContent
+    };
+
+    this.performCreateOperation({
+      serviceMethod: this.adminService.addSection.bind(this.adminService), // Ensure this method takes only one argument (data)
+      formData: data,
+      postCreationActions: () => {
+        this.getNews();
+        this.getSingleNews(this.sectionId, false);
+        this.showSection = false;
+        this.editingSection = false;
+        this.editSectionId = null;
+        this.editorContent = null;
+      },
+      resetForm: false,
+      closeFormFlag: true,
+      resetFlags: () => {
+        this.showSection = false;
+        this.editingSection = false;
+      }
+    });
+  }
+
+  createVacancy() {
+    this.performCreateOperation({
+      serviceMethod: this.adminService.createVacancy.bind(this.adminService),
+      formData: this.vacancyForm.value,
+      postCreationActions: () => {
+        this.getVacancy();
+        this.vacancyForm.reset();
+        this.showVacancyForm = false;
+      },
+      resetForm: true,
+      closeFormFlag: true,
+      resetFlags: () => {
+        this.showVacancyForm = false;
+      }
+    });
+  }
+
+  createAddress() {
+    this.performCreateOperation({
+      serviceMethod: this.adminService.createAddress.bind(this.adminService),
+      formData: this.addressForm.value,
+      postCreationActions: () => {
+        this.getAddress();
+        this.addressForm.reset();
+        this.showAddressForm = false;
+      },
+      resetForm: true,
+      closeFormFlag: true,
+      resetFlags: () => {
+        this.showAddressForm = false;
+      }
+    });
+  }
+
+  createPartner() {
+    this.performCreateOperation({
+      serviceMethod: this.adminService.createPartner.bind(this.adminService),
+      formData: this.partnerForm.value,
+      postCreationActions: () => {
+        this.getPartners();
+        this.wathParnterForm = false;
+        this.partnerForm.reset();
+      },
+      resetForm: true,
+      closeFormFlag: true,
+      resetFlags: () => {
+        this.wathParnterForm = false;
+      }
+    });
+  }
+
+  //close smth functions
+
+  performCloseOperation(options: {
+    resetForms?: boolean;
+    additionalActions?: () => void;
+    resetFlags?: () => void;
+  }): void {
+    if (options.resetForms) {
+      this.crewForm.reset();
+      this.projectForm.reset();
+      this.newsForm.reset();
+      this.sectionForm.reset();
+      this.vacancyForm.reset();
+      this.textForm.reset();
+      this.passwordForm.reset();
+      this.addressForm.reset();
+      this.partnerForm.reset();
+      this.editorContent = null;
+    }
+    if (options.resetFlags) {
+      options.resetFlags();
+    }
+    if (options.additionalActions) {
+      options.additionalActions();
+    }
+  }
+
+  closeForm() {
+    this.performCloseOperation({
+      resetForms: true,
+      resetFlags: () => {
+        this.showCrewForm = false;
+        this.wathParnterForm = false;
+        this.showProjectForm = false;
+        this.showNewsForm = false;
+        this.showSection = false;
+        this.showVacancyForm = false;
+        this.showTextForm = false;
+        this.showDetailedBio = false;
+        this.editingCrew = false;
+        this.editingNews = false;
+        this.editingVacancy = false;
+        this.editingProject = false;
+        this.editingSection = false;
+        this.showDistForm = false;
+        this.editingDist = false;
+        this.editingAddress = false;
+        this.showAddressForm = false;
+      },
+    });
+  }
+
+  closeAddCrew() {
+    this.performCloseOperation({
+      additionalActions: () => {
+        this.getProjects();
+        this.getSingleProject(this.projectIdToAddCrew, false);
+        this.showAddCrewToProject = false;
+        this.projectIdToAddCrew = null;
+      },
+    });
+  }
+
+  closeAddProject() {
+    this.performCloseOperation({
+      additionalActions: () => {
+        this.getVacancy();
+        this.getSingleVacancy(this.vacancyToAddProject, false);
+        this.showAddVacancyForm = false;
+        this.vacancyToAddProject = null;
+      },
+    });
+  }
+
+  //media add
+
+  performUploadOperation(
+    serviceMethod: (id: number, fd: FormData) => Observable<any>,
+    object: any,
+    fd: FormData,
+    successActions: () => void
+  ): void {
+    serviceMethod(object.id, fd)
+      .pipe(
+        tap(() => successActions()),
+        catchError((error: any): Observable<any> => {
+          throw error;
+        })
+      )
+      .subscribe();
+  }
+
+  onFileSelected(event: any, object: any, foo: any, whereUpload: string) {
+    this.selectedImage = <File>event.target.files[0];
+    this.imageSelected = true;
+
+    const fd = new FormData();
+    fd.append('file', this.selectedImage, this.selectedImage.name);
+
+    switch (whereUpload) {
+      case 'project':
+        this.performUploadOperation(
+          this.adminService.addPhoto.bind(this.adminService),
+          object,
+          fd,
+          () => {
+            this.getProjects();
+            this.getSingleProject(object.id, false);
+          }
+        );
+        break;
+
+      case 'crew':
+        this.performUploadOperation(
+          this.adminService.addPhotoToCrew.bind(this.adminService),
+          object,
+          fd,
+          () => {
+            this.getCrews();
+            this.getSingleCrew(object.id, false);
+          }
+        );
+        break;
+
+      case 'news':
+        this.performUploadOperation(
+          this.adminService.addPhotoToNews.bind(this.adminService),
+          object,
+          fd,
+          () => {
+            this.getNews();
+            this.getSingleNews(object.id, false);
+          }
+        );
+        break;
+
+      case 'section':
+        this.performUploadOperation(
+          this.adminService.addPhotoToSection.bind(this.adminService),
+          object,
+          fd,
+          () => {
+            this.getNews();
+            this.getSingleNews(foo.id, false);
+          }
+        );
+        break;
+
+      case 'projectTitle':
+        this.performUploadOperation(
+          this.adminService.addTitlePhoto.bind(this.adminService),
+          object,
+          fd,
+          () => {
+            this.getProjects();
+            this.getSingleProject(object.id, false);
+          }
+        );
+        break;
+
+      case 'page':
+        this.performUploadOperation(
+          this.adminService.addTextPhoto.bind(this.adminService),
+          object,
+          fd,
+          () => {
+            this.getText();
+          }
+        );
+        break;
+
+      case 'partner':
+        this.performUploadOperation(
+          this.adminService.addPartnerLogo.bind(this.adminService),
+          object,
+          fd,
+          () => {
+            this.getPartners();
+          }
+        );
+        break;
+
+      case 'pageGallery':
+        this.performUploadOperation(
+          this.adminService.addPhotoToGallery.bind(this.adminService),
+          object,
+          fd,
+          () => {
+            this.getText();
+          }
+        );
+        break;
+
+      default:
+        console.error('Unknown upload type:', whereUpload);
+    }
+  }
+
+  //remove / delete
+
+  performDeleteOperation(
+    serviceMethod: (...args: any[]) => Observable<any>,
+    args: any[],
+    successActions: () => void
+  ): void {
+    serviceMethod(...args)
+      .pipe(
+        tap(() => successActions()),
+        catchError((error: any): Observable<any> => {
+          throw error;
+        })
+      )
+      .subscribe();
+  }
+
+  removePhoto(id: number, imageName: string) {
+    this.performDeleteOperation(
+      this.adminService.deletePhoto.bind(this.adminService),
+      [id, imageName],
+      () => {
+        this.getProjects();
+        this.getSingleProject(id, false);
+      }
+    );
+  }
+
+  removeCrewPhoto(id: number, imageName: string) {
+    this.performDeleteOperation(
+      this.adminService.deleteCrewPhoto.bind(this.adminService),
+      [id, imageName],
+      () => {
+        this.getCrews();
+        this.getSingleCrew(id, false);
+      }
+    );
+  }
+
+  removeCrewFromProject(crewId: number, projectId: number) {
+    this.performDeleteOperation(
+      this.adminService.removeCrewFromProject.bind(this.adminService),
+      [crewId, projectId],
+      () => {
+        this.getProjects();
+        this.getSingleProject(projectId, false);
+      }
+    );
+  }
+
+  removePrFromVacancy(vacancyId: number, projectId: number) {
+    this.performDeleteOperation(
+      this.adminService.removeVacancyFromProject.bind(this.adminService),
+      [vacancyId, projectId],
+      () => {
+        this.getVacancy();
+        this.getSingleVacancy(vacancyId, false);
+      }
+    );
+  }
+
+  removeGalleryPhoto(item: any, photoName: any) {
+    this.performDeleteOperation(
+      this.adminService.deleteGalleryPhoto.bind(this.adminService),
+      [item.id, photoName],
+      () => {
+        this.getText();
+      }
+    );
+  }
+
+  deleteVacancy(id: number) {
+    this.performDeleteOperation(
+      this.adminService.deleteVacancy.bind(this.adminService),
+      [id],
+      () => {
+        this.getVacancy();
+        this.singleVacancy = null;
+      }
+    );
+  }
+
+  deleteSection(id: number, newsId: number) {
+    this.performDeleteOperation(
+      this.adminService.deleteSection.bind(this.adminService),
+      [id],
+      () => {
+        this.getNews();
+        this.getSingleNews(newsId, false);
+      }
+    );
+  }
+
+  deleteSectionImage(id: number, sectionPhotoUrl: any, newsId: number) {
+    this.performDeleteOperation(
+      this.adminService.deletePhotoFromSection.bind(this.adminService),
+      [id, sectionPhotoUrl],
+      () => {
+        this.getNews();
+        this.getSingleNews(newsId, false);
+      }
+    );
+  }
+
+  deleteNewsImage(id: number, newsPhotoUrl: any) {
+    this.performDeleteOperation(
+      this.adminService.deletePhotoFromNews.bind(this.adminService),
+      [id, newsPhotoUrl],
+      () => {
+        this.getNews();
+        this.getSingleNews(id, false);
+      }
+    );
+  }
+
+  deleteNews(id: number) {
+    this.performDeleteOperation(
+      this.adminService.deleteNews.bind(this.adminService),
+      [id],
+      () => {
+        this.getNews();
+      }
+    );
+  }
+
+  deleteTitlePhoto(id: number, photoTitle: any) {
+    this.performDeleteOperation(
+      this.adminService.deleteTitlePhoto.bind(this.adminService),
+      [id, photoTitle],
+      () => {
+        this.getProjects();
+        this.getSingleProject(id, false);
+      }
+    );
+  }
+
+  deleteAddress(id: number) {
+    this.performDeleteOperation(
+      this.adminService.deleteAddress.bind(this.adminService),
+      [id],
+      () => {
+        this.getAddress();
+      }
+    );
+  }
+
+  deletePartner(id: number) {
+    this.performDeleteOperation(
+      this.adminService.deletePartner.bind(this.adminService),
+      [id],
+      () => {
+        this.getPartners();
+      }
+    );
+  }
+
+  deletePartnerLogo(id: number, logoId: any) {
+    this.performDeleteOperation(
+      this.adminService.deletePartnerLogo.bind(this.adminService),
+      [id, logoId],
+      () => {
+        this.getPartners();
+      }
+    );
+  }
+
+  //add functions
+
+  performAddOperation(
+    serviceMethod: (...args: any[]) => Observable<any>,
+    args: any[],
+    successActions: () => void
+  ): void {
+    serviceMethod(...args)
+      .pipe(
+        tap(() => successActions()),
+        catchError((error: any): Observable<any> => {
+          throw error;
+        })
+      )
+      .subscribe();
+  }
+
+  addToProject(id: number) {
+    this.performAddOperation(
+      this.adminService.addCrewToProject.bind(this.adminService),
+      [id, this.projectIdToAddCrew],
+      () => {
+      });
+  }
+
+  addCrewToProject(id: number) {
+    this.showAddCrewToProject = true
+    this.projectIdToAddCrew = id
+    this.adminService.getCrews()
       .pipe(
         tap((response: any) => {
-          this.getCrews()
+          this.addCrewArr = response
+        }),
+        catchError((error: any): Observable<any> => {
+          throw error;
+        })).subscribe()
+  }
+
+  addToVacancy(projectId: number) {
+    this.performAddOperation(
+      this.adminService.addVacancyToProject.bind(this.adminService), // Service method
+      [this.vacancyToAddProject, projectId], // Arguments for the service method
+      () => {
+      });
+  }
+
+  //publish
+
+  togglePublish(
+    serviceMethod: (id: number, data: any) => Observable<any>,
+    id: number,
+    data: any,
+    successCallbacks: (() => void)[] = []
+  ) {
+    serviceMethod(id, data)
+      .pipe(
+        tap(() => {
+          successCallbacks.forEach(callback => callback());
+        }),
+        catchError((error: any): Observable<any> => {
+          console.error(error);
+          return throwError(error);
+        })
+      )
+      .subscribe();
+  }
+
+  publish(id: number) {
+    this.togglePublish(
+      this.adminService.editProject.bind(this.adminService),
+      id,
+      {publish: true},
+      [() => this.getProjects(), () => this.getSingleProject(id, false)]
+    );
+  }
+
+  unPublish(id: number) {
+    this.togglePublish(
+      this.adminService.editProject.bind(this.adminService),
+      id,
+      {publish: false},
+      [() => this.getProjects(), () => this.getSingleProject(id, false)]
+    );
+  }
+
+  publishNews(id: number) {
+    this.togglePublish(
+      this.adminService.changeNews.bind(this.adminService),
+      id,
+      {publish: true},
+      [() => this.getNews(), () => this.getSingleNews(id, false)]
+    );
+  }
+
+  unpublishNews(id: number) {
+    this.togglePublish(
+      this.adminService.changeNews.bind(this.adminService),
+      id,
+      {publish: false},
+      [() => this.getNews(), () => this.getSingleNews(id, false)]
+    );
+  }
+
+  publishVacancy(id: number) {
+    this.togglePublish(
+      this.adminService.changeVacancy.bind(this.adminService),
+      id,
+      {vanish: true},
+      [() => this.getVacancy(), () => this.getSingleVacancy(id, false)]
+    );
+  }
+
+  unPublishVacancy(id: number) {
+    this.togglePublish(
+      this.adminService.changeVacancy.bind(this.adminService),
+      id,
+      {vanish: false},
+      [() => this.getVacancy(), () => this.getSingleVacancy(id, false)]
+    );
+  }
+
+  publishCrew(id: number) {
+    this.togglePublish(
+      this.adminService.editCrew.bind(this.adminService),
+      id,
+      {publish: true},
+      [() => this.getSingleCrew(id, false)]
+    );
+  }
+
+  unpublishCrew(id: number) {
+    this.togglePublish(
+      this.adminService.editCrew.bind(this.adminService),
+      id,
+      {publish: false},
+      [() => this.getSingleCrew(id, false)]
+    );
+  }
+
+  publishAddress(id: number) {
+    this.togglePublish(
+      this.adminService.changeAddress.bind(this.adminService),
+      id,
+      {publish: true},
+      [() => this.getAddress()]
+    );
+  }
+
+  unpublishAddress(id: number) {
+    this.togglePublish(
+      this.adminService.changeAddress.bind(this.adminService),
+      id,
+      {publish: false},
+      [() => this.getAddress()]
+    );
+  }
+
+  publishPartner(id: number) {
+    this.togglePublish(
+      this.adminService.changePartner.bind(this.adminService),
+      id,
+      {publish: true},
+      [() => this.getPartners()]
+    );
+  }
+
+  unpublishPartner(id: number) {
+    this.togglePublish(
+      this.adminService.changePartner.bind(this.adminService),
+      id,
+      {publish: false},
+      [() => this.getPartners()]
+    );
+  }
+
+  //add functions
+
+  performAdd(
+    serviceMethod: (id: number, data: any) => Observable<any>, // Service method
+    id: number,
+    formValue: any,
+    successActions: () => void
+  ): void;
+
+  performAdd(
+    serviceMethod: (data: any) => Observable<any>, // Service method without ID
+    id: null,
+    formValue: any,
+    successActions: () => void // Actions to run on success
+  ): void;
+
+  performAdd(
+    serviceMethod: any, // Allow either type of service method
+    id: number | null,
+    formValue: any,
+    successActions: () => void
+  ): void {
+    if (id !== null) {
+      serviceMethod(id, formValue)
+        .pipe(
+          tap(() => successActions()),
+          catchError((error: any): Observable<any> => {
+            throw error;
+          })
+        )
+        .subscribe();
+    } else {
+      serviceMethod(formValue)
+        .pipe(
+          tap(() => successActions()),
+          catchError((error: any): Observable<any> => {
+            throw error;
+          })
+        )
+        .subscribe();
+    }
+  }
+
+  addPrize(id: number) {
+    this.performAdd(
+      this.adminService.addPrize.bind(this.adminService), // Service method
+      id, // ID is required
+      this.prizeForm.value, // Form data
+      () => {
+        this.getProjects();
+        this.getSingleProject(id, false);
+        this.prizeForm.reset();
+      }
+    );
+  }
+
+  addParticipation(id: number) {
+    this.performAdd(
+      this.adminService.addParticipation.bind(this.adminService),
+      id,
+      this.participationForm.value,
+      () => {
+        this.getProjects();
+        this.getSingleProject(id, false);
+        this.participationForm.reset();
+      }
+    );
+  }
+
+  addNews() {
+    this.performAdd(
+      this.adminService.addNews.bind(this.adminService),
+      null,
+      this.newsForm.value,
+      () => {
+        this.getNews();
+        this.newsForm.reset();
+        this.showNewsForm = false;
+      }
+    );
+  }
+
+  //edit functions
+
+  performEdit(
+    serviceMethod: (id: number, data: any) => Observable<any>,
+    id: number,
+    formValue: any,
+    successActions: () => void
+  ) {
+    serviceMethod(id, formValue)
+      .pipe(
+        tap(() => {
+          successActions();
+        }),
+        catchError((error: any): Observable<any> => {
+          throw error;
+        })
+      )
+      .subscribe();
+  }
+
+  editPartner() {
+    this.performEdit(
+      this.adminService.changePartner.bind(this.adminService),
+      this.editPartnerId,
+      this.partnerForm.value,
+      () => {
+        this.getPartners();
+        this.partnerForm.reset();
+        this.wathParnterForm = false;
+        this.editingPartner = false;
+        this.editPartnerId = null;
+      }
+    );
+  }
+
+  editParticipation(id: number, project: number) {
+    this.performEdit(
+      this.adminService.changeParticipation.bind(this.adminService),
+      id,
+      this.editParticipationForm.value,
+      () => {
+        this.getProjects();
+        this.getSingleProject(project, false);
+        this.editParticipationForm.reset();
+      }
+    );
+  }
+
+  editPrize(id: number, prize: number) {
+    this.performEdit(
+      this.adminService.changePrize.bind(this.adminService),
+      id,
+      this.editPrizeForm.value,
+      () => {
+        this.getProjects();
+        this.getSingleProject(prize, false);
+        this.editPrizeForm.reset();
+      }
+    );
+  }
+
+  editSection() {
+    const data = {sectionDescription: this.editorContent};
+    this.performEdit(
+      this.adminService.changeSection.bind(this.adminService),
+      this.editSectionId,
+      data,
+      () => {
+        this.getNews();
+        this.getSingleNews(this.sectionNewsId, false);
+        this.showSection = false;
+        this.editingSection = false;
+        this.editSectionId = null;
+        this.editorContent = null;
+      }
+    );
+  }
+
+  editProject() {
+    this.adminService.editProject(this.editProjectId, this.projectForm.value)
+      .pipe(
+        tap(() => {
+          this.getProjects()
+          this.getSingleProject(this.editProjectId, false)
+          this.editProjectId = null
+          this.editingProject = false
         }),
         catchError((error: any): Observable<any> => {
           throw error;
@@ -736,7 +1641,7 @@ export class AdminPageComponent implements OnInit {
 
     this.adminService.editCrew(this.editCrewId, formData)
       .pipe(
-        tap((response: any) => {
+        tap(() => {
           this.getCrews()
           this.getSingleCrew(this.editCrewId, false)
           this.editCrewId = null
@@ -749,975 +1654,160 @@ export class AdminPageComponent implements OnInit {
       .subscribe();
   }
 
-  projectSubmit() {
-    if (this.editingProject) {
-      this.editProject()
-    } else {
-      this.createProject()
-    }
-
-    this.showProjectForm = false
-  }
-
-  editProject() {
-    this.adminService.editProject(this.editProjectId, this.projectForm.value)
-      .pipe(
-        tap((response: any) => {
-          this.getProjects()
-          this.getSingleProject(this.editProjectId, false)
-          this.editProjectId = null
-          this.editingProject = false
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  createProject() {
-    this.adminService.addNewProject(this.projectForm.value)
-      .pipe(
-        tap((response: any) => {
-          this.getProjects()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  onFileSelected(event: any, object: any, foo: any, whereUpload: string) {
-
-    this.selectedImage = <File>event.target.files[0];
-    this.imageSelected = true;
-
-    if (whereUpload === 'project') {
-      this.uploadImage(object)
-    } else if (whereUpload === 'crew') {
-      this.uploadImageToCrew(object)
-    } else if (whereUpload === 'news') {
-      this.uploadImageToNews(object)
-    } else if (whereUpload === 'section') {
-      this.uploadImageToSection(object, foo)
-    } else if (whereUpload === 'projectTitle') {
-      this.uploadImageToProjectTitle(object)
-    } else if (whereUpload === 'page') {
-      this.uploadImageToPage(object)
-    } else if (whereUpload === 'partner') {
-      this.uploadImageToPartner(object)
-    }else if (whereUpload ==='pageGallery') {
-      this.uploadImageToGallery(object)
-    }
-  }
-
-
-  uploadImageToGallery(object:any){
-    const fd = new FormData();
-    fd.append('file', this.selectedImage, this.selectedImage.name)
-
-    this.adminService.addPhotoToGallery(object.id, fd)
-      .pipe(
-        tap((response: any) => {
-          this.getText()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
-  uploadImageToPartner(object: any) {
-    const fd = new FormData();
-    fd.append('file', this.selectedImage, this.selectedImage.name)
-
-    this.adminService.addPartnerLogo(object.id, fd)
-      .pipe(
-        tap((response: any) => {
-          this.getPartners()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
-  uploadImageToPage(object: any) {
-    const fd = new FormData();
-    fd.append('file', this.selectedImage, this.selectedImage.name)
-
-    this.adminService.addTextPhoto(object.id, fd)
-      .pipe(
-        tap((response: any) => {
-          this.getText()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
-  uploadImageToProjectTitle(object: any) {
-    const fd = new FormData();
-    fd.append('file', this.selectedImage, this.selectedImage.name)
-
-    this.adminService.addTitlePhoto(object.id, fd)
-      .pipe(
-        tap((response: any) => {
-          this.getProjects()
-          this.getSingleProject(object.id, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
-  uploadImageToSection(object: any, foo: any) {
-    const fd = new FormData();
-    fd.append('file', this.selectedImage, this.selectedImage.name)
-
-    this.adminService.addPhotoToSection(object.id, fd)
-      .pipe(
-        tap((response: any) => {
-          this.getNews()
-          this.getSingleNews(foo.id, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  uploadImageToNews(object: any) {
-    const fd = new FormData();
-    fd.append('file', this.selectedImage, this.selectedImage.name)
-
-    this.adminService.addPhotoToNews(object.id, fd)
-      .pipe(
-        tap((response: any) => {
-          this.getNews()
-          this.getSingleNews(object.id, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  uploadImageToCrew(object: any) {
-    const fd = new FormData();
-    fd.append('file', this.selectedImage, this.selectedImage.name)
-
-    this.adminService.addPhotoToCrew(object.id, fd)
-      .pipe(
-        tap((response: any) => {
-          this.getCrews()
-          this.getSingleCrew(object.id, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  uploadImage(object: any) {
-
-    const fd = new FormData();
-    fd.append('file', this.selectedImage, this.selectedImage.name)
-
-
-    this.adminService.addPhoto(object.id, fd)
-      .pipe(
-        tap((response: any) => {
-          this.getProjects()
-          this.getSingleProject(object.id, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-
-
-  }
-
-  removePhoto(id: number, imageName: string) {
-
-    this.adminService.deletePhoto(id, imageName)
-      .pipe(
-        tap((response: any) => {
-          this.getProjects()
-          this.getSingleProject(id, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  removeCrewPhoto(id: number, imageName: string) {
-    this.adminService.deleteCrewPhoto(id, imageName)
-      .pipe(
-        tap((response: any) => {
-          this.getCrews()
-          this.getSingleCrew(id, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  addCrewToProject(id: number) {
-
-    this.showAddCrewToProject = true
-    this.projectIdToAddCrew = id
-
-
-    this.adminService.getCrews()
-      .pipe(
-        tap((response: any) => {
-          this.addCrewArr = response
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe()
-  }
-
-  closeAddCrew() {
-
-    this.getProjects()
-    this.getSingleProject(this.projectIdToAddCrew, false)
-
-    this.showAddCrewToProject = false;
-    this.projectIdToAddCrew = null;
-
-
-  }
-
-  addToProject(id: number) {
-    this.adminService.addCrewToProject(id, this.projectIdToAddCrew)
-      .pipe(
-        tap((response: any) => {
-
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe()
-  }
-
-  removeCrewFromProject(crewId: number, projectId: number) {
-    this.adminService.removeCrewFromProject(crewId, projectId)
-      .pipe(
-        tap((response: any) => {
-          this.getProjects()
-          this.getSingleProject(projectId, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe()
-  }
-
-  publish(id: number) {
-
-    const body = {
-      publish: true
-    }
-
-    this.adminService.editProject(id, body)
-      .pipe(
-        tap((response: any) => {
-          this.getProjects()
-          this.getSingleProject(id, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  unPublish(id: number) {
-
-    const body = {
-      publish: false
-    }
-
-    this.adminService.editProject(id, body)
-      .pipe(
-        tap((response: any) => {
-          this.getProjects()
-          this.getSingleProject(id, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  addPrize(id: number) {
-    this.adminService.addPrize(id, this.prizeForm.value)
-      .pipe(
-        tap((response: any) => {
-          this.getProjects()
-          this.getSingleProject(id, false)
-          this.prizeForm.reset()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  addParticipation(id: number) {
-    this.adminService.addParticipation(id, this.participationForm.value)
-      .pipe(
-        tap((response: any) => {
-          this.getProjects()
-          this.getSingleProject(id, false)
-          this.participationForm.reset()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  deletePrize(id: number) {
-    this.adminService.deletePrize(id)
-      .pipe(
-        tap((response: any) => {
-          this.getProjects()
-          this.getSingleProject(id, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  deleteParticipation(id: number) {
-    this.adminService.deleteParticipation(id)
-      .pipe(
-        tap((response: any) => {
-          this.getProjects()
-          this.getSingleProject(id, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  editParticipation(id: number, project: number) {
-    this.adminService.changeParticipation(id, this.editParticipationForm.value)
-      .pipe(
-        tap((response: any) => {
-          this.getProjects()
-          this.getSingleProject(project, false)
-          this.editParticipationForm.reset()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  editPrize(id: number, prize: number) {
-    this.adminService.changePrize(id, this.editPrizeForm.value)
-      .pipe(
-        tap((response: any) => {
-          this.getProjects()
-          this.getSingleProject(prize, false)
-          this.editPrizeForm.reset()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  newsSubmit() {
-    if (this.editingNews) {
-      this.editNews()
-    } else {
-      this.addNews()
-    }
-    this.showNewsForm = false
-    this.newsForm.reset()
-  }
-
-
   editNews() {
-
-    let formValue = this.newsForm.value;
+    const formValue = this.newsForm.value;
     if (formValue.tags.length > 0) {
       formValue.tags = formValue.tags.toString().split(',').filter(Boolean);
     }
 
-    this.adminService.changeNews(this.editNewsId, formValue)
-      .pipe(
-        tap((response: any) => {
-          this.getNews();
-          this.getSingleNews(this.editNewsId, false);
-          this.editNewsId = null;
-          this.editingNews = false;
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
-  publishNews(id: number) {
-
-    let data = {
-      publish: true
-    }
-
-    this.adminService.changeNews(id, data)
-      .pipe(
-        tap((response: any) => {
-          this.getNews();
-          this.getSingleNews(id, false);
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
-  unpublishNews(id: number) {
-
-    let data = {
-      publish: false
-    }
-
-    this.adminService.changeNews(id, data)
-      .pipe(
-        tap((response: any) => {
-          this.getNews();
-          this.getSingleNews(id, false);
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  addNews() {
-
-
-    let formValue = this.newsForm.value;
-    if (formValue.tags.length > 0) {
-      formValue.tags = formValue.tags.toString().split(',').filter(Boolean);
-    }
-
-
-    this.adminService.addNews(formValue)
-      .pipe(
-        tap((response: any) => {
-          this.getNews()
-          this.newsForm.reset()
-          this.showNewsForm = false
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  startNewsEdit(id: number, news: any) {
-    this.editingNews = true
-    this.editNewsId = id
-
-    if (news.customDate) {
-      let date = new Date(news.customDate);
-      let formattedDate = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
-      news.customDate = formattedDate;
-    }
-
-    this.newsForm.patchValue(news);
-    this.showNewsForm = true
-  }
-
-  sectionSubmit() {
-    if (this.editingSection) {
-      this.editSection()
-    } else {
-      this.createSection()
-    }
-  }
-
-  createSection() {
-    let data = {
-      sectionDescription: this.editorContent
-    }
-
-    this.adminService.addSection(this.sectionId, data)
-      .pipe(
-        tap((response: any) => {
-          this.getNews()
-          this.getSingleNews(this.sectionId, false)
-          this.showSection = false
-          this.editingSection = false
-          this.editSectionId = null
-          this.editorContent = null
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  editSection() {
-
-    let data = {
-      sectionDescription: this.editorContent
-    }
-
-    this.adminService.changeSection(this.editSectionId, data)
-      .pipe(
-        tap((response: any) => {
-          this.getNews()
-          this.getSingleNews(this.sectionNewsId, false)
-          this.showSection = false
-          this.editingSection = false
-          this.editSectionId = null
-          this.editorContent = null
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
-
-
-  startVacancyEdit(id: number, vacancy: any) {
-    this.vacancyForm.patchValue(vacancy)
-    this.editingVacancy = true
-    this.editVacancyId = id
-    this.showVacancyForm = true
-  }
-
-
-  vacancySubmit() {
-    if (this.editingVacancy) {
-      this.editVacancy()
-    } else {
-      this.createVacancy()
-    }
-  }
-
-  createVacancy() {
-    this.adminService.createVacancy(this.vacancyForm.value)
-      .pipe(
-        tap((response: any) => {
-          this.getVacancy()
-          this.vacancyForm.reset()
-          this.showVacancyForm = false
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
+    this.performEdit(
+      this.adminService.changeNews.bind(this.adminService),
+      this.editNewsId,
+      formValue,
+      () => {
+        this.getNews();
+        this.getSingleNews(this.editNewsId, false);
+        this.editNewsId = null;
+        this.editingNews = false;
+      }
+    );
   }
 
   editVacancy() {
-    this.adminService.changeVacancy(this.editVacancyId, this.vacancyForm.value)
-      .pipe(
-        tap((response: any) => {
-          this.getVacancy()
-
-          this.getSingleVacancy(this.editVacancyId, false)
-          this.vacancyForm.reset()
-          this.showVacancyForm = false
-          this.editingVacancy = false
-          this.editVacancyId = null
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
+    this.performEdit(
+      this.adminService.changeVacancy.bind(this.adminService),
+      this.editVacancyId,
+      this.vacancyForm.value,
+      () => {
+        this.getVacancy();
+        this.getSingleVacancy(this.editVacancyId, false);
+        this.vacancyForm.reset();
+        this.showVacancyForm = false;
+        this.editingVacancy = false;
+        this.editVacancyId = null;
+      }
+    );
   }
 
-  publishVacancy(id: number) {
+  editAddress() {
+    this.performEdit(
+      this.adminService.changeAddress.bind(this.adminService),
+      this.editAddressId,
+      this.addressForm.value,
+      () => {
+        this.getAddress();
+        this.addressForm.reset();
+        this.showAddressForm = false;
+        this.editingAddress = false;
+        this.editAddressId = null;
+      }
+    );
+  }
 
-    const body = {
-      vanish: true
+  //start edit
+
+  startEdit(type: string, id: number, data: any = null, extra: any = null) {
+    switch (type) {
+      case 'news':
+        this.editingNews = true;
+        this.editNewsId = id;
+
+        if (data?.customDate) {
+          let date = new Date(data.customDate);
+          data.customDate = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+        }
+
+        this.newsForm.patchValue(data);
+        this.showNewsForm = true;
+        break;
+
+      case 'vacancy':
+        this.editingVacancy = true;
+        this.editVacancyId = id;
+        this.vacancyForm.patchValue(data);
+        this.showVacancyForm = true;
+        break;
+
+      case 'section':
+        this.editingSection = true;
+        this.editSectionId = id;
+        this.sectionNewsId = extra; // Assuming `extra` contains `newsId`
+        this.sectionForm.patchValue(data);
+        this.showSection = true;
+        this.editorContent = extra?.html || ''; // Assuming `html` is passed in `extra`
+        break;
+
+      case 'text':
+        this.editTextId = id;
+        this.showTextForm = true;
+        this.editorContent = data?.text || '';
+        break;
+
+      case 'details':
+        this.editBioId = id;
+        this.showDetailedBio = true;
+        this.editorContent = data;
+        break;
+
+      case 'address':
+        this.editingAddress = true;
+        this.editAddressId = id;
+        this.addressForm.patchValue(data);
+        this.showAddressForm = true;
+        break;
+
+      case 'url':
+        this.editPartnerId = id;
+        this.editingPartner = true;
+        this.wathParnterForm = true;
+        this.partnerForm.patchValue(data);
+        break;
+
+      case 'addProject':
+        this.vacancyToAddProject = id;
+        this.showAddVacancyForm = true;
+        this.getProjectArr();
+        break;
+
+      default:
+        console.error('Unsupported edit type:', type);
+        break;
     }
-
-    this.adminService.changeVacancy(id, body)
-      .pipe(
-        tap((response: any) => {
-          this.getVacancy()
-          this.getSingleVacancy(id, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
   }
 
-  unPublishVacancy(id: number) {
-    const body = {
-      vanish: false
-    }
-
-    this.adminService.changeVacancy(id, body)
-      .pipe(
-        tap((response: any) => {
-          this.getVacancy()
-          this.getSingleVacancy(id, false)
-
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
+  startNewsEdit(id: number, news: any) {
+    this.startEdit('news', id, news);
   }
 
-  deleteVacancy(id: number) {
-    this.adminService.deleteVacancy(id)
-      .pipe(
-        tap((response: any) => {
-          this.getVacancy()
-          this.singleVacancy = null
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
+  startVacancyEdit(id: number, vacancy: any) {
+    this.startEdit('vacancy', id, vacancy);
   }
-
 
   startSectionEdit(id: number, section: any, newsId: number, html: any) {
-    this.editingSection = true
-    this.editSectionId = id
-    this.sectionNewsId = newsId
-    this.sectionForm.patchValue(section)
-    this.showSection = true
-    this.editorContent = html
+    this.startEdit('section', id, section, {newsId, html});
   }
-
-  deleteSection(id: number, newsId: number) {
-    this.adminService.deleteSection(id)
-      .pipe(
-        tap((response: any) => {
-          this.getNews()
-          this.getSingleNews(newsId, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  deleteSectionImage(id: number, sectionPhotoUrl: any, newsId: number) {
-    this.adminService.deletePhotoFromSection(id, sectionPhotoUrl)
-      .pipe(
-        tap((response: any) => {
-          this.getNews()
-          this.getSingleNews(newsId, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  deleteNewsImage(id: number, newsPhotoUrl: any) {
-    this.adminService.deletePhotoFromNews(id, newsPhotoUrl)
-      .pipe(
-        tap((response: any) => {
-          this.getNews()
-          this.getSingleNews(id, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  showVacancy() {
-    this.showVacancyForm = true
-  }
-
-  deleteNews(id: number) {
-    this.adminService.deleteNews(id)
-      .pipe(
-        tap((response: any) => {
-          this.getNews()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  deleteTitlePhoto(id: number, photoTitle: any) {
-    this.adminService.deleteTitlePhoto(id, photoTitle)
-      .pipe(
-        tap((response: any) => {
-          this.getProjects()
-          this.getSingleProject(id, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  getSingleVacancy(id: number, scrollTop: boolean) {
-    this.adminService.getVacancyById(id)
-      .pipe(
-        tap((response: any) => {
-
-          if (scrollTop) {
-
-            setTimeout(() => {
-              this.scrollTop()
-            }, 1000)
-
-
-          }
-
-
-          this.watchingPartners = false
-          this.watchingEmails = false
-          this.watchingButtons = false
-          this.singleVacancy = response
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  getSingleNews(id: number, scrollTop: boolean) {
-    this.adminService.getNewsById(id)
-      .pipe(
-        tap((response: any) => {
-
-
-          if (scrollTop) {
-            this.scrollTop()
-          }
-
-
-          this.watchingPartners = false
-          this.watchingButtons = false
-          this.singleNews = response
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
-
 
   startTextEdit(id: number, text: any) {
-    this.editTextId = id
-    this.showTextForm = true
-    this.editorContent = text.text
+    this.startEdit('text', id, text);
   }
-
-
-
 
   startDetailsEdit(id: number, text: any) {
-    this.editBioId = id
-    this.showDetailedBio = true
-    this.editorContent = text
+    this.startEdit('details', id, text);
   }
 
-  bioSubmit() {
-
-    let data = {
-      detailBio: this.editorContent
-    }
-
-
-    this.adminService.editCrew(this.editBioId, data)
-      .pipe(
-        tap((response: any) => {
-          this.getCrews()
-          this.getSingleCrew(this.editBioId, false)
-          this.editBioId = null
-          // this.textForm.reset()
-          this.showDetailedBio = false
-          this.editorContent = null
-
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
+  startAddressEdit(id: number, address: any) {
+    this.startEdit('address', id, address);
   }
 
-
-  textSubmit() {
-
-    let data = {
-      text: this.editorContent
-    }
-
-
-    this.adminService.changeText(this.editTextId, data)
-      .pipe(
-        tap((response: any) => {
-          this.editTextId = null
-          this.textForm.reset()
-          this.showTextForm = false
-          this.editorContent = null
-          this.getText()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
+  startUrlEdit(id: number, item: any) {
+    this.startEdit('url', id, item);
   }
 
-
-  passwordSubmit() {
-
-    let data = {
-      email: 'admin',
-      password: this.passwordForm.value.password
-    }
-
-
-    this.adminService.resetPass(data)
-      .pipe(
-        tap((response: any) => {
-          this.passwordForm.reset()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
+  startAddingProject(id: number) {
+    this.startEdit('addProject', id);
   }
 
-
-  publishCrew(id: number) {
-
-    let data = {
-      publish: true
-    }
-
-    this.adminService.editCrew(id, data)
-      .pipe(
-        tap((response: any) => {
-          this.getSingleCrew(id, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  unpublishCrew(id: number) {
-    let data = {
-      publish: false
-    }
-
-    this.adminService.editCrew(id, data)
-      .pipe(
-        tap((response: any) => {
-          this.getSingleCrew(id, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
-
-  getEmails() {
-    this.adminService.getEmail()
-      .pipe(
-        tap((response: any) => {
-          this.emails = response;
-          this.watchingEmails = true
-
-          this.watchingAddresses = false
-          this.watchingButtons = false
-
-
-          this.watchingPartners = false
-          this.watchingText = false
-          this.watchingCrew = false
-          this.watchingNews = false
-          this.watchingProjects = false
-          this.watchingVacancy = false
-          this.showPasswordForm = false
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
+  // buttons
   disableButton(id: number) {
     let data = {
       active: false
@@ -1725,7 +1815,7 @@ export class AdminPageComponent implements OnInit {
 
     this.adminService.changeButton(id, data)
       .pipe(
-        tap((response: any) => {
+        tap(() => {
           this.getButtons()
         }),
         catchError((error: any): Observable<any> => {
@@ -1734,7 +1824,6 @@ export class AdminPageComponent implements OnInit {
       )
       .subscribe();
   }
-
 
   activateButton(id: number) {
     let data = {
@@ -1743,7 +1832,7 @@ export class AdminPageComponent implements OnInit {
 
     this.adminService.changeButton(id, data)
       .pipe(
-        tap((response: any) => {
+        tap(() => {
           this.getButtons()
         }),
         catchError((error: any): Observable<any> => {
@@ -1751,391 +1840,5 @@ export class AdminPageComponent implements OnInit {
         })
       )
       .subscribe();
-  }
-
-  buttonsSubmit(id: number) {
-    const formData = this.buttonsForm[id].value;
-
-    this.adminService.changeButton(id, formData)
-      .pipe(
-        tap((response: any) => {
-          this.getButtons();
-          this.buttonsForm[id].reset();
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
-  deletePageImage(id: number, photoUrl: any) {
-    this.adminService.deleteTextPhoto(id, photoUrl)
-      .pipe(
-        tap((response: any) => {
-          this.getText();
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  getAddress() {
-    this.adminService.getAddress()
-      .pipe(
-        tap((response: any) => {
-          this.addresses = response
-          this.watchingAddresses = true
-
-
-          this.watchingPartners = false
-          this.watchingEmails = false
-          this.watchingButtons = false
-          this.watchingCrew = false
-          this.watchingProjects = false
-          this.watchingNews = false
-          this.watchingVacancy = false
-          this.watchingText = false
-          this.text = null
-          this.watchingEmails = false
-
-          this.showPasswordForm = false
-          this.singleProject = null
-          this.singleNews = null
-          this.singleVacancy = null
-          this.watchingEmails = false
-
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
-  publishAddress(id: number) {
-    let data = {
-      publish: true
-    }
-
-    this.adminService.changeAddress(id, data)
-      .pipe(
-        tap((response: any) => {
-          this.getAddress()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
-  unpublishAddress(id: number) {
-    let data = {
-      publish: false
-    }
-
-    this.adminService.changeAddress(id, data)
-      .pipe(
-        tap((response: any) => {
-          this.getAddress()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  deleteAddress(id: number) {
-
-    this.adminService.deleteAddress(id)
-      .pipe(
-        tap((response: any) => {
-          this.getAddress()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-          this.getAddress()
-        })
-      )
-      .subscribe();
-  }
-
-  showAdresForm() {
-    this.showAddressForm = true
-  }
-
-  startAddressEdit(id: number, address: any) {
-    this.editingAddress = true
-    this.editAddressId = id
-    this.addressForm.patchValue(address);
-    this.showAddressForm = true
-  }
-
-
-  addressSubmit() {
-    if (this.editingAddress) {
-      this.editAddress()
-    } else {
-      this.createAddress()
-    }
-  }
-
-  editAddress() {
-    this.adminService.changeAddress(this.editAddressId, this.addressForm.value)
-      .pipe(
-        tap((response: any) => {
-          this.getAddress()
-          this.addressForm.reset()
-          this.showAddressForm = false
-          this.editingAddress = false
-          this.editAddressId = null
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  createAddress() {
-    this.adminService.createAddress(this.addressForm.value)
-      .pipe(
-        tap((response: any) => {
-          this.getAddress()
-          this.addressForm.reset()
-          this.showAddressForm = false
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  getPartners() {
-    this.adminService.getPartner()
-      .pipe(
-        tap((response: any) => {
-
-          this.partners = response
-
-          this.watchingPartners = true
-          this.watchingAddresses = false
-          this.watchingEmails = false
-          this.watchingButtons = false
-          this.watchingCrew = false
-          this.watchingProjects = false
-          this.watchingNews = false
-          this.watchingVacancy = false
-          this.watchingText = false
-          this.text = null
-          this.watchingEmails = false
-
-          this.showPasswordForm = false
-          this.singleProject = null
-          this.singleNews = null
-          this.singleVacancy = null
-          this.watchingEmails = false
-
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
-  publishPartner(id: number) {
-    let data = {
-      publish: true
-    }
-
-    this.adminService.changePartner(id, data)
-      .pipe(
-        tap((response: any) => {
-          this.getPartners()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
-  unpublishPartner(id: number) {
-    let data = {
-      publish: false
-    }
-
-    this.adminService.changePartner(id, data)
-      .pipe(
-        tap((response: any) => {
-          this.getPartners()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  deletePartner(id: number) {
-
-    this.adminService.deletePartner(id)
-      .pipe(
-        tap((response: any) => {
-          this.getPartners()
-        }),
-        catchError((error: any): Observable<any> => {
-          this.getPartners()
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
-  showPartnerForm() {
-    this.wathParnterForm = true
-  }
-
-  partnerSubmit() {
-    if (this.editingPartner) {
-      this.editPartner()
-    } else {
-      this.createPartner()
-    }
-  }
-
-
-  createPartner() {
-    this.adminService.createPartner(this.partnerForm.value)
-      .pipe(
-        tap((response: any) => {
-          this.getPartners()
-          this.wathParnterForm = false
-          this.partnerForm.reset()
-        }),
-        catchError((error: any): Observable<any> => {
-
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  editPartner() {
-    this.adminService.changePartner(this.editPartnerId, this.partnerForm.value)
-      .pipe(
-        tap((response: any) => {
-          this.getPartners()
-          this.partnerForm.reset()
-          this.wathParnterForm = false
-          this.editingPartner = false
-          this.editPartnerId = null
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-
-  startUrlEdit(id: number, item: any) {
-    this.editPartnerId = id
-    this.editingPartner = true
-    this.wathParnterForm = true
-    this.partnerForm.patchValue(item)
-  }
-
-  deletePartnerLogo(id: number, logoId: any) {
-    this.adminService.deletePartnerLogo(id, logoId)
-      .pipe(
-        tap((response: any) => {
-          this.getPartners()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe();
-  }
-
-  closeAddProject() {
-    this.getVacancy()
-    this.getSingleVacancy(this.vacancyToAddProject, false)
-
-    this.showAddVacancyForm = false;
-    this.vacancyToAddProject = null;
-  }
-
-
-  getProjectArr() {
-    this.adminService.getAdminProjects()
-      .pipe(
-        tap((response: any) => {
-          this.addProjectArr = response
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe()
-  }
-
-  startAddingProject(id: number) {
-    this.vacancyToAddProject = id
-    this.showAddVacancyForm = true
-    this.getProjectArr()
-  }
-
-  addToVacancy(projectId: number) {
-    this.adminService.addVacancyToProject(this.vacancyToAddProject, projectId)
-      .pipe(
-        tap((response: any) => {
-
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe()
-  }
-
-  removePrFromVacancy(vacancyId: number, projectId: number) {
-    this.adminService.removeVacancyFromProject(vacancyId, projectId)
-      .pipe(
-        tap((response: any) => {
-          this.getVacancy()
-          this.getSingleVacancy(vacancyId, false)
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe()
-  }
-
-  removeGalleryPhoto(item:any,photoName:any) {
-    this.adminService.deleteGalleryPhoto(item.id, photoName)
-      .pipe(
-        tap((response: any) => {
-          this.getText()
-        }),
-        catchError((error: any): Observable<any> => {
-          throw error;
-        })
-      )
-      .subscribe()
   }
 }
