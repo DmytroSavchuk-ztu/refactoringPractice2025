@@ -23,12 +23,7 @@ interface DecodedToken {
 export class AdminPageComponent implements OnInit {
 
 
-  imagePath = imageUrl
-  editorContent: any;
-  editingAddress: boolean = false;
 
-
-  baseUrl = window.location.protocol + "//" + window.location.host;
 
 
   ngOnInit() {
@@ -212,91 +207,90 @@ export class AdminPageComponent implements OnInit {
   }
 
 
+  imagePath = imageUrl
+  baseUrl = window.location.protocol + "//" + window.location.host;
+  // forms
   buttonsForm: { [id: string]: FormGroup } = {};
   projectForm!: FormGroup;
   crewForm!: FormGroup;
-
   newsForm!: FormGroup;
-
   distForm!: FormGroup;
-
-  prizeForm!: FormGroup;
-
+  prizeForm!: FormGroup
   sectionForm!: FormGroup;
-
   vacancyForm!: FormGroup;
-
   participationForm!: FormGroup;
-
   editPrizeForm!: FormGroup;
-
   editParticipationForm!: FormGroup
-
   passwordForm!: FormGroup;
-
+  textForm!: FormGroup;
+  partnerForm!: FormGroup;
+  addressForm!: FormGroup
+  // vars
+  [key: string]: any;
   crews: any;
-
   singleCrew: any;
-
   projects: any;
-
   singleProject: any
-
   news: any;
-
   singleNews: any;
-
   vacancy: any;
-
   singleVacancy: any;
-
-  editCrewId!: any;
-
-  editProjectId: any;
-
-  editNewsId: any;
-
-  watchingCrew: boolean = false;
-
-  watchingProjects: boolean = false;
-
-  watchingVacancy: boolean = false
-
-  watchingNews: boolean = false
-
-  showCrewForm: boolean = false;
-
-  showDistForm: boolean = false
-
-  showProjectForm: boolean = false;
-
-  showNewsForm: boolean = false;
-
-  showVacancyForm: boolean = false
-
-  showSection: boolean = false;
-
-  showAddCrewToProject: boolean = false
-
-  editingCrew: boolean = false;
-
-  editingProject: boolean = false;
-
-  imageSelected = false;
-  selectedImage!: File;
-
   addCrewArr: any;
-
-  projectIdToAddCrew!: any;
-
-  editingNews: boolean = false
-
-
-  showPasswordForm: boolean = false
-
   buttons: any;
-
+  text: any
+  editorContent: any;
+  vacancyToAddProject: any;
+  addProjectArr: any;
+  partners: any;
+  emails: any;
+  addresses: any
+  // ids
+  editCrewId!: any;
+  editProjectId: any;
+  editNewsId: any;
+  projectIdToAddCrew!: any;
+  editTextId: any
+  sectionId: any
+  editPartnerId: any
+  editVacancyId: any
+  editSectionId: any
+  sectionNewsId: any
+  editBioId: any;
+  editAddressId: any;
+  // booleans for pages
+  watchingCrew: boolean = false;
+  watchingProjects: boolean = false;
+  watchingVacancy: boolean = false
+  watchingNews: boolean = false
+  showCrewForm: boolean = false;
+  showDistForm: boolean = false
+  showProjectForm: boolean = false;
+  showNewsForm: boolean = false;
+  showVacancyForm: boolean = false
+  showSection: boolean = false;
+  showAddCrewToProject: boolean = false
+  editingCrew: boolean = false;
+  editingProject: boolean = false;
+  imageSelected = false;
+  editingNews: boolean = false
+  showPasswordForm: boolean = false
   watchingButtons: boolean = false;
+  watchingText: boolean = false
+  editingDist: boolean = false;
+  showTextForm: boolean = false
+  editingAddress: boolean = false;
+  showAddVacancyForm: boolean = false
+  editingPartner: boolean = false
+  watchingPartners: boolean = false
+  wathParnterForm: boolean = false
+  editingVacancy: boolean = false
+  editingSection: boolean = false
+  watchingEmails: boolean = false
+  showDetailedBio: boolean = false;
+  watchingAddresses: boolean = false
+  showAddressForm: boolean = false
+
+  selectedImage!: File;
 
   getButtons() {
     this.adminService.getButtons()
@@ -528,9 +522,7 @@ export class AdminPageComponent implements OnInit {
   }
 
 
-  text: any
 
-  watchingText: boolean = false
 
 
   getText() {
@@ -617,8 +609,6 @@ export class AdminPageComponent implements OnInit {
   }
 
 
-  sectionId: any
-
   showSectionForm(id: number) {
     this.showSection = true
     this.sectionId = id
@@ -676,7 +666,7 @@ export class AdminPageComponent implements OnInit {
   }
 
 
-  editingDist: boolean = false;
+
 
   closeForm() {
     this.showCrewForm = false
@@ -1339,9 +1329,6 @@ export class AdminPageComponent implements OnInit {
   }
 
 
-  editingVacancy: boolean = false
-
-  editVacancyId: any
 
 
   startVacancyEdit(id: number, vacancy: any) {
@@ -1446,12 +1433,6 @@ export class AdminPageComponent implements OnInit {
       .subscribe();
   }
 
-
-  editingSection: boolean = false
-
-  editSectionId: any
-
-  sectionNewsId: any
 
   startSectionEdit(id: number, section: any, newsId: number, html: any) {
     this.editingSection = true
@@ -1585,9 +1566,6 @@ export class AdminPageComponent implements OnInit {
   }
 
 
-  editTextId: any
-  showTextForm: boolean = false
-  textForm!: FormGroup;
 
 
   startTextEdit(id: number, text: any) {
@@ -1597,7 +1575,7 @@ export class AdminPageComponent implements OnInit {
   }
 
 
-  editBioId: any;
+
 
   startDetailsEdit(id: number, text: any) {
     this.editBioId = id
@@ -1712,10 +1690,6 @@ export class AdminPageComponent implements OnInit {
   }
 
 
-  emails: any;
-  watchingEmails: boolean = false
-  showDetailedBio: boolean = false;
-
 
   getEmails() {
     this.adminService.getEmail()
@@ -1809,10 +1783,6 @@ export class AdminPageComponent implements OnInit {
       .subscribe();
   }
 
-
-  addresses: any
-  watchingAddresses: boolean = false
-
   getAddress() {
     this.adminService.getAddress()
       .pipe(
@@ -1897,18 +1867,9 @@ export class AdminPageComponent implements OnInit {
       .subscribe();
   }
 
-
-  showAddressForm: boolean = false
-
-  addressForm!: FormGroup
-
-
   showAdresForm() {
     this.showAddressForm = true
   }
-
-
-  editAddressId: any;
 
   startAddressEdit(id: number, address: any) {
     this.editingAddress = true
@@ -1925,7 +1886,6 @@ export class AdminPageComponent implements OnInit {
       this.createAddress()
     }
   }
-
 
   editAddress() {
     this.adminService.changeAddress(this.editAddressId, this.addressForm.value)
@@ -1958,13 +1918,6 @@ export class AdminPageComponent implements OnInit {
       )
       .subscribe();
   }
-
-
-  partners: any;
-  watchingPartners: boolean = false
-
-  wathParnterForm: boolean = false
-  partnerForm!: FormGroup;
 
   getPartners() {
     this.adminService.getPartner()
@@ -2098,10 +2051,6 @@ export class AdminPageComponent implements OnInit {
   }
 
 
-  editPartnerId: any
-
-  editingPartner: boolean = false
-
   startUrlEdit(id: number, item: any) {
     this.editPartnerId = id
     this.editingPartner = true
@@ -2121,14 +2070,6 @@ export class AdminPageComponent implements OnInit {
       )
       .subscribe();
   }
-
-
-  vacancyToAddProject: any;
-
-  showAddVacancyForm: boolean = false
-
-  addProjectArr: any;
-
 
   closeAddProject() {
     this.getVacancy()
